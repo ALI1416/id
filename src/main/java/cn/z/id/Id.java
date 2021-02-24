@@ -1,15 +1,14 @@
 package cn.z.id;
 
+import cn.z.clock.Clock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import cn.z.Clock;
 
 /**
  * <h1>高性能Id生成器</h1>
  *
  * <p>
- * createDate 2020/12/23 15:11:35
+ * createDate 2021/02/24 20:36:27
  * </p>
  *
  * @author ALI[ali-k@foxmail.com]
@@ -75,7 +74,7 @@ public class Id {
     /**
      * 判断取值是否合理
      */
-    private static void vaild() {
+    private static void valid() {
         // 机器码位数过大或过小
         if (MACHINE_BITS < 0 || MACHINE_BITS > 64) {
             log.error("机器码位数MACHINE_BITS需要>=0并且<=64。当前为" + MACHINE_BITS, new IllegalArgumentException());
@@ -98,7 +97,7 @@ public class Id {
 
     /**
      * 初始化
-     * 
+     *
      * @param machineId    机器码
      * @param machineBits  机器码位数
      * @param sequenceBits 序列号位数
@@ -107,7 +106,7 @@ public class Id {
         MACHINE_ID = machineId;
         MACHINE_BITS = machineBits;
         SEQUENCE_BITS = sequenceBits;
-        vaild();
+        valid();
     }
 
     /**
@@ -152,8 +151,8 @@ public class Id {
         }
         // 返回按位拼接后的数值
         return ((currentTimestamp - startTimestamp) << TIMESTAMP_LEFT_SHIFT) // 时间戳的差
-                | (MACHINE_ID << MACHINE_LEFT_SHIFT)// 机器码
-                | sequence;// 序列号
+                | (MACHINE_ID << MACHINE_LEFT_SHIFT) // 机器码
+                | sequence; // 序列号
     }
 
 }
