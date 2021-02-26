@@ -102,11 +102,22 @@ public class Id {
      * @param machineBits  机器码位数
      * @param sequenceBits 序列号位数
      */
-    public static void init(long machineId, long machineBits, long sequenceBits) {
-        MACHINE_ID = machineId;
-        MACHINE_BITS = machineBits;
-        SEQUENCE_BITS = sequenceBits;
-        valid();
+    public static synchronized void init(long machineId, long machineBits, long sequenceBits) {
+        if (lastTimestamp == -1) {
+            synchronized (Id.class) {
+                if (lastTimestamp == -1) {
+                    lastTimestamp = -2;
+                    MACHINE_ID = machineId;
+                    MACHINE_BITS = machineBits;
+                    SEQUENCE_BITS = sequenceBits;
+                    valid();
+                } else {
+                    log.warn("已经初始化过了，不可重复初始化！");
+                }
+            }
+        } else {
+            log.warn("已经初始化过了，不可重复初始化！");
+        }
     }
 
     /**
