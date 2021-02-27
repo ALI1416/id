@@ -110,6 +110,8 @@ public class Id {
                     MACHINE_ID = machineId;
                     MACHINE_BITS = machineBits;
                     SEQUENCE_BITS = sequenceBits;
+                    log.info("开始初始化，MACHINE_ID为{}，MACHINE_BITS为{}，SEQUENCE_BITS为{}", MACHINE_ID, MACHINE_BITS,
+                            SEQUENCE_BITS);
                     valid();
                 } else {
                     log.warn("已经初始化过了，不可重复初始化！");
