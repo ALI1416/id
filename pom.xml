@@ -5,15 +5,16 @@
 
 	<groupId>cn.404z</groupId>
 	<artifactId>id</artifactId>
-	<version>1.0.1</version>
+	<version>1.1.0</version>
 
 	<name>Id</name>
 	<description>High performance ID generator</description>
 	<url>https://github.com/ALI1416/id</url>
 
 	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<jdk>1.8</jdk>
+		<maven.compiler.source>${jdk}</maven.compiler.source>
+		<maven.compiler.target>${jdk}</maven.compiler.target>
 		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -23,7 +24,7 @@
 		<dependency>
 			<groupId>cn.404z</groupId>
 			<artifactId>clock</artifactId>
-			<version>1.0.0</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -74,7 +75,7 @@
 
 	<profiles>
 		<profile>
-			<id>release</id>
+			<id>install</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -84,16 +85,26 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-compiler-plugin</artifactId>
 						<version>3.8.1</version>
+						<configuration>
+							<source>${jdk}</source>
+							<target>${jdk}</target>
+						</configuration>
 					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>deploy</id>
+			<build>
+				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-release-plugin</artifactId>
-						<version>2.5.3</version>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-scm-plugin</artifactId>
-						<version>1.11.2</version>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.8.1</version>
+						<configuration>
+							<source>${jdk}</source>
+							<target>${jdk}</target>
+						</configuration>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -112,17 +123,14 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<version>3.2.0</version>
-						<!--<configuration>-->
-						<!--<javadocExecutable>D:/Program Files/Zulu/zulu-11/bin/javadoc</javadocExecutable>-->
-						<!--</configuration>-->
 						<executions>
 							<execution>
-								<id>attach-javadocs</id>
 								<phase>package</phase>
 								<goals>
 									<goal>jar</goal>
 								</goals>
 								<configuration>
+									<source>${jdk}</source>
 									<additionalJOption>-Xdoclint:none</additionalJOption>
 								</configuration>
 							</execution>
@@ -147,13 +155,22 @@
 						<version>2.8.2</version>
 						<executions>
 							<execution>
-								<id>default-deploy</id>
 								<phase>deploy</phase>
 								<goals>
 									<goal>deploy</goal>
 								</goals>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-release-plugin</artifactId>
+						<version>2.5.3</version>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.11.2</version>
 					</plugin>
 					<plugin>
 						<groupId>org.sonatype.plugins</groupId>
