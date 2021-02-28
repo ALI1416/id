@@ -50,19 +50,21 @@ public class Id {
     /**
      * 最大机器码
      **/
-    private final static long MACHINE_MAX = ~(-1L << MACHINE_BITS);
+    private static long MACHINE_MAX = ~(-1L << MACHINE_BITS);
     /**
      * 最大序列号
      **/
-    private final static long SEQUENCE_MAX = ~(-1L << SEQUENCE_BITS);
+    private static long SEQUENCE_MAX = ~(-1L << SEQUENCE_BITS);
     /**
      * 机器码左移量
      */
-    private final static long MACHINE_LEFT_SHIFT = SEQUENCE_BITS;
+    private static long MACHINE_LEFT_SHIFT = SEQUENCE_BITS;
     /**
      * 时间戳左移量(其中二进制头部占1位为0来保证生成的id是正数)
      */
-    private final static long TIMESTAMP_LEFT_SHIFT = SEQUENCE_BITS + MACHINE_BITS - 1;
+    private static long TIMESTAMP_LEFT_SHIFT = (SEQUENCE_BITS + MACHINE_BITS == 0 //
+            ? 0//
+            : SEQUENCE_BITS + MACHINE_BITS - 1);
 
     /**
      * 禁止构造
@@ -90,7 +92,7 @@ public class Id {
         // 时间戳位数过小(需要留给时间戳35位才能使用1年，其中二进制头部占1位为0来保证生成的id是正数)
         // 28 = 64 - 35 - 1
         if (SEQUENCE_BITS + MACHINE_BITS > 28) {
-            log.error("时间戳分配的位数过小，需要SEQUENCE_BITS+MACHINE_BITS<=28。当前为" + (SEQUENCE_BITS + MACHINE_BITS),
+            log.warn("时间戳分配的位数过小，当SEQUENCE_BITS+MACHINE_BITS<=28才可使用1年。当前为" + (SEQUENCE_BITS + MACHINE_BITS),
                     new IllegalArgumentException());
         }
     }
@@ -110,6 +112,12 @@ public class Id {
                     MACHINE_ID = machineId;
                     MACHINE_BITS = machineBits;
                     SEQUENCE_BITS = sequenceBits;
+                    MACHINE_MAX = ~(-1L << MACHINE_BITS);
+                    SEQUENCE_MAX = ~(-1L << SEQUENCE_BITS);
+                    MACHINE_LEFT_SHIFT = SEQUENCE_BITS;
+                    TIMESTAMP_LEFT_SHIFT = (SEQUENCE_BITS + MACHINE_BITS == 0 //
+                            ? 0//
+                            : SEQUENCE_BITS + MACHINE_BITS - 1);
                     log.info("开始初始化，MACHINE_ID为{}，MACHINE_BITS为{}，SEQUENCE_BITS为{}", MACHINE_ID, MACHINE_BITS,
                             SEQUENCE_BITS);
                     valid();
