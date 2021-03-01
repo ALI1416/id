@@ -1,14 +1,13 @@
 package cn.z.id;
 
 import cn.z.clock.Clock;
-
-import java.sql.Timestamp;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Timestamp;
+
 /**
- * <h1>高性能Id生成器</h1>
+ * <h1>高性能雪花Id生成器</h1>
  *
  * <p>
  * createDate 2021/02/24 20:36:27
@@ -68,16 +67,8 @@ public class Id {
     private static long TIMESTAMP_LEFT_SHIFT;
 
     static {
+        log.info("预初始化...");
         initialization(0, 8, 12);
-        log.info("自动初始化，MACHINE_ID为{}，MACHINE_BITS为{}，SEQUENCE_BITS为{}", MACHINE_ID, MACHINE_BITS, SEQUENCE_BITS);
-        available();
-    }
-
-    /**
-     * 禁止构造
-     */
-    private Id() {
-
     }
 
     /**
@@ -95,6 +86,11 @@ public class Id {
         SEQUENCE_MAX = ~(-1L << SEQUENCE_BITS);
         MACHINE_LEFT_SHIFT = SEQUENCE_BITS;
         TIMESTAMP_LEFT_SHIFT = (MACHINE_BITS + SEQUENCE_BITS == 0 ? 0 : MACHINE_BITS + SEQUENCE_BITS - 1);
+        log.info("初始化，MACHINE_ID为{}，MACHINE_BITS为{}，SEQUENCE_BITS为{}", MACHINE_ID, MACHINE_BITS, SEQUENCE_BITS);
+        long timestampMax = ~(-1L << (64 - TIMESTAMP_LEFT_SHIFT));
+        log.info("最大机器码MACHINE_ID为为{}，1ms内最多生成Id数量为{}，时钟最早回拨到{}，可使用时间大约为{}年，失效日期为{}", MACHINE_MAX, SEQUENCE_MAX,
+                new Timestamp(startTimestamp), timestampMax / (365 * 24 * 60 * 60 * 1000L),
+                new Timestamp(startTimestamp + timestampMax));
     }
 
     /**
@@ -109,11 +105,21 @@ public class Id {
             synchronized (Id.class) {
                 if (lastTimestamp == -1) {
                     lastTimestamp = -2;
+                    log.info("手动初始化...");
                     initialization(machineId, machineBits, sequenceBits);
-                    log.info("手动初始化，MACHINE_ID为{}，MACHINE_BITS为{}，SEQUENCE_BITS为{}", MACHINE_ID, MACHINE_BITS,
-                            SEQUENCE_BITS);
-                    valid();
-                    available();
+                    // 机器码
+                    if (MACHINE_ID > MACHINE_MAX || MACHINE_ID < 0) {
+                        log.error("机器码MACHINE_ID需要>=0并且<=" + MACHINE_MAX + "。当前为" + MACHINE_ID,
+                                new IllegalArgumentException());
+                    }
+                    // 机器码位数
+                    if (MACHINE_BITS < 0 || MACHINE_BITS > 64) {
+                        log.error("机器码位数MACHINE_BITS需要>=0并且<=64。当前为" + MACHINE_BITS, new IllegalArgumentException());
+                    }
+                    // 序列号位数
+                    if (SEQUENCE_BITS < 0 || SEQUENCE_BITS > 64) {
+                        log.error("序列号位数SEQUENCE_BITS需要>=0并且<=64。当前为" + SEQUENCE_BITS, new IllegalArgumentException());
+                    }
                 } else {
                     log.warn("已经初始化过了，不可重复初始化！");
                 }
@@ -121,34 +127,6 @@ public class Id {
         } else {
             log.warn("已经初始化过了，不可重复初始化！");
         }
-    }
-
-    /**
-     * 判断取值是否合理
-     */
-    private static void valid() {
-        // 机器码
-        if (MACHINE_ID > MACHINE_MAX || MACHINE_ID < 0) {
-            log.error("机器码MACHINE_ID需要>=0并且<=" + MACHINE_MAX + "。当前为" + MACHINE_ID, new IllegalArgumentException());
-        }
-        // 机器码位数
-        if (MACHINE_BITS < 0 || MACHINE_BITS > 64) {
-            log.error("机器码位数MACHINE_BITS需要>=0并且<=64。当前为" + MACHINE_BITS, new IllegalArgumentException());
-        }
-        // 序列号位数
-        if (SEQUENCE_BITS < 0 || SEQUENCE_BITS > 64) {
-            log.error("序列号位数SEQUENCE_BITS需要>=0并且<=64。当前为" + SEQUENCE_BITS, new IllegalArgumentException());
-        }
-    }
-
-    /**
-     * 可用性检查
-     */
-    private static void available() {
-        long TIMESTAMP_MAX = ~(-1L << (64 - TIMESTAMP_LEFT_SHIFT));
-        log.info("最大机器码为{}，1ms内最大序列号为{}，最早时钟回拨到{}，可使用时间为{}，失效日期为{}", MACHINE_MAX, SEQUENCE_MAX,
-                new Timestamp(startTimestamp), new Timestamp(TIMESTAMP_MAX),
-                new Timestamp(startTimestamp + TIMESTAMP_MAX));
     }
 
     /**
