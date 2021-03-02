@@ -10,6 +10,33 @@ import java.sql.Timestamp;
  * <h1>高性能雪花Id生成器</h1>
  *
  * <p>
+ * 雪花Id结构：0|时间戳的差|机器码|序列号<br>
+ * 正数1位，时间戳的差43位，机器码8位，序列号12位的二进制形式为<br>
+ * 0|1111111 11111111 11111111 11111111<br>
+ * 11111111 1111|1111 1111|1111 11111111<br>
+ * <br>
+ * 在有效时间戳内，二进制形式为<br>
+ * 00000000 00000000 00000|111 11111111<br>
+ * 11111111 11111111 11111111 11111111<br>
+ * 左移8+12=20位(机器码位数+序列号位数)变成<br>
+ * 0|1111111 11111111 11111111 11111111<br>
+ * 11111111 1111|0000 00000000 00000000<br>
+ * <br>
+ * 最大机器码内，二进制形式为<br>
+ * 00000000 00000000 00000000 00000000<br>
+ * 00000000 00000000 00000000 11111111<br>
+ * 左移12位(序列号位数)变成<br>
+ * 00000000 00000000 00000000 00000000<br>
+ * 00000000 0000|1111 1111|0000 00000000<br>
+ * <br>
+ * 最大序列号内，二进制形式为<br>
+ * 00000000 00000000 00000000 00000000<br>
+ * 00000000 00000000 0000|1111 11111111<br>
+ * <br>
+ * 三者通过"位或"运算得到雪花Id
+ * </p>
+ *
+ * <p>
  * createDate 2021/02/24 20:36:27
  * </p>
  *
@@ -58,13 +85,17 @@ public class Id {
      **/
     private static long SEQUENCE_MAX;
     /**
+     * 最大时间戳
+     */
+    private static long TIMESTAMP_MAX;
+    /**
      * 机器码左移量
      */
     private static long MACHINE_LEFT_SHIFT;
     /**
-     * 时间戳左移量(其中二进制头部占1位为0来保证生成的id是正数)
+     * 时间戳的差左移量
      */
-    private static long TIMESTAMP_LEFT_SHIFT;
+    private static long DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT;
 
     static {
         log.info("预初始化...");
@@ -85,12 +116,16 @@ public class Id {
         MACHINE_MAX = ~(-1L << MACHINE_BITS);
         SEQUENCE_MAX = ~(-1L << SEQUENCE_BITS);
         MACHINE_LEFT_SHIFT = SEQUENCE_BITS;
-        TIMESTAMP_LEFT_SHIFT = (MACHINE_BITS + SEQUENCE_BITS == 0 ? 0 : MACHINE_BITS + SEQUENCE_BITS - 1);
+        DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT = MACHINE_BITS + SEQUENCE_BITS;
+        TIMESTAMP_MAX = ~(-1L << (63 - DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT));
         log.info("初始化，MACHINE_ID为{}，MACHINE_BITS为{}，SEQUENCE_BITS为{}", MACHINE_ID, MACHINE_BITS, SEQUENCE_BITS);
-        long timestampMax = ~(-1L << (64 - TIMESTAMP_LEFT_SHIFT));
         log.info("最大机器码MACHINE_ID为为{}，1ms内最多生成Id数量为{}，时钟最早回拨到{}，可使用时间大约为{}年，失效日期为{}", MACHINE_MAX, SEQUENCE_MAX,
-                new Timestamp(startTimestamp), timestampMax / (365 * 24 * 60 * 60 * 1000L),
-                new Timestamp(startTimestamp + timestampMax));
+                new Timestamp(startTimestamp), TIMESTAMP_MAX / (365 * 24 * 60 * 60 * 1000L),
+                new Timestamp(startTimestamp + TIMESTAMP_MAX));
+        long now = Clock.now();
+        if (now > TIMESTAMP_MAX) {
+            log.error("当前时间" + new Timestamp(now) + "已失效！", new Exception("时间戳超出最大值"));
+        }
     }
 
     /**
@@ -107,19 +142,7 @@ public class Id {
                     lastTimestamp = -2;
                     log.info("手动初始化...");
                     initialization(machineId, machineBits, sequenceBits);
-                    // 机器码
-                    if (MACHINE_ID > MACHINE_MAX || MACHINE_ID < 0) {
-                        log.error("机器码MACHINE_ID需要>=0并且<=" + MACHINE_MAX + "。当前为" + MACHINE_ID,
-                                new IllegalArgumentException());
-                    }
-                    // 机器码位数
-                    if (MACHINE_BITS < 0 || MACHINE_BITS > 64) {
-                        log.error("机器码位数MACHINE_BITS需要>=0并且<=64。当前为" + MACHINE_BITS, new IllegalArgumentException());
-                    }
-                    // 序列号位数
-                    if (SEQUENCE_BITS < 0 || SEQUENCE_BITS > 64) {
-                        log.error("序列号位数SEQUENCE_BITS需要>=0并且<=64。当前为" + SEQUENCE_BITS, new IllegalArgumentException());
-                    }
+                    valid();
                 } else {
                     log.warn("已经初始化过了，不可重复初始化！");
                 }
@@ -130,11 +153,35 @@ public class Id {
     }
 
     /**
+     * 有效性检查
+     */
+    public static void valid() {
+        boolean valid = true;
+        // 机器码
+        if (MACHINE_ID > MACHINE_MAX || MACHINE_ID < 0) {
+            log.error("机器码MACHINE_ID需要>=0并且<=" + MACHINE_MAX + "。当前为" + MACHINE_ID, new IllegalArgumentException());
+        }
+        // 机器码位数
+        if (MACHINE_BITS < 0 || MACHINE_BITS > 64) {
+            log.error("机器码位数MACHINE_BITS需要>=0并且<=64。当前为" + MACHINE_BITS, new IllegalArgumentException());
+        }
+        // 序列号位数
+        if (SEQUENCE_BITS < 0 || SEQUENCE_BITS > 64) {
+            log.error("序列号位数SEQUENCE_BITS需要>=0并且<=64。当前为" + SEQUENCE_BITS, new IllegalArgumentException());
+        }
+
+    }
+
+    /**
      * 获取下一个序列号
      */
     public static synchronized long next() {
         // 当前时间戳
         long currentTimestamp = Clock.now();
+        // 判断当前时间是否失效
+        if (currentTimestamp > TIMESTAMP_MAX) {
+            log.error("当前时间" + new Timestamp(currentTimestamp) + "已失效！", new Exception("时间戳超出最大值"));
+        }
         // 判断当前时间戳 和 上一次时间戳的大小关系
         if (lastTimestamp == currentTimestamp) {
             /* 同一毫秒 */
@@ -142,7 +189,7 @@ public class Id {
             sequence += 1;
             // 判断是否大于最大序列号
             if (sequence > SEQUENCE_MAX) {
-                log.warn("检测到阻塞，时间戳为{}，最大序列号为{}。请考虑增加SEQUENCE_BITS。", currentTimestamp, SEQUENCE_MAX - 1);
+                log.warn("检测到阻塞，时间戳为{}，最大序列号为{}。", currentTimestamp, SEQUENCE_MAX);
                 /* 阻塞当前这一毫秒 */
                 while (lastTimestamp == currentTimestamp) {
                     currentTimestamp = Clock.now();
@@ -170,7 +217,7 @@ public class Id {
             lastTimestamp = currentTimestamp;
         }
         // 返回 按位或 后的数值
-        return ((currentTimestamp - startTimestamp) << TIMESTAMP_LEFT_SHIFT) // 时间戳的差
+        return ((currentTimestamp - startTimestamp) << DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT) // 时间戳的差
                 | (MACHINE_ID << MACHINE_LEFT_SHIFT) // 机器码
                 | sequence; // 序列号
     }
