@@ -15,7 +15,7 @@ import java.sql.Timestamp;
  * 0|1111111 11111111 11111111 11111111<br>
  * 11111111 1111|1111 1111|1111 11111111<br>
  * <br>
- * 在有效时间戳内，二进制形式为<br>
+ * 在有效时间戳的差内，二进制形式为<br>
  * 00000000 00000000 00000|111 11111111<br>
  * 11111111 11111111 11111111 11111111<br>
  * 左移8+12=20位(机器码位数+序列号位数)变成<br>
@@ -85,10 +85,6 @@ public class Id {
      **/
     private static long SEQUENCE_MAX;
     /**
-     * 最大时间戳
-     */
-    private static long TIMESTAMP_MAX;
-    /**
      * 机器码左移量
      */
     private static long MACHINE_LEFT_SHIFT;
@@ -117,14 +113,15 @@ public class Id {
         SEQUENCE_MAX = ~(-1L << SEQUENCE_BITS);
         MACHINE_LEFT_SHIFT = SEQUENCE_BITS;
         DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT = MACHINE_BITS + SEQUENCE_BITS;
-        TIMESTAMP_MAX = ~(-1L << (63 - DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT));
+        // 最大时间戳差
+        long differenceOfTimestampMax = ~(-1L << (63 - DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT));
         log.info("初始化，MACHINE_ID为{}，MACHINE_BITS为{}，SEQUENCE_BITS为{}", MACHINE_ID, MACHINE_BITS, SEQUENCE_BITS);
-        log.info("最大机器码MACHINE_ID为为{}，1ms内最多生成Id数量为{}，时钟最早回拨到{}，可使用时间大约为{}年，失效日期为{}", MACHINE_MAX, SEQUENCE_MAX,
-                new Timestamp(startTimestamp), TIMESTAMP_MAX / (365 * 24 * 60 * 60 * 1000L),
-                new Timestamp(startTimestamp + TIMESTAMP_MAX));
-        long now = Clock.now();
-        if (now > TIMESTAMP_MAX) {
-            log.error("当前时间" + new Timestamp(now) + "已失效！", new Exception("时间戳超出最大值"));
+        log.info("最大机器码MACHINE_ID为{}，1ms内最多生成Id数量为{}，时钟最早回拨到{}，可使用时间大约为{}年，失效日期为{}", MACHINE_MAX, SEQUENCE_MAX + 1,
+                new Timestamp(startTimestamp), differenceOfTimestampMax / (365 * 24 * 60 * 60 * 1000L),
+                new Timestamp(startTimestamp + differenceOfTimestampMax));
+        long currentTimestamp = Clock.now();
+        if (currentTimestamp - startTimestamp > differenceOfTimestampMax) {
+            log.error("当前时间" + new Timestamp(currentTimestamp) + "已失效！", new Exception("时间戳超出最大值"));
         }
     }
 
@@ -156,20 +153,28 @@ public class Id {
      * 有效性检查
      */
     public static void valid() {
+        // 是否有效
         boolean valid = true;
         // 机器码
         if (MACHINE_ID > MACHINE_MAX || MACHINE_ID < 0) {
-            log.error("机器码MACHINE_ID需要>=0并且<=" + MACHINE_MAX + "。当前为" + MACHINE_ID, new IllegalArgumentException());
+            valid = false;
+            log.error("机器码MACHINE_ID需要>=0并且<=" + MACHINE_MAX + "。当前为" + MACHINE_ID, new Exception("机器码无效"));
         }
         // 机器码位数
         if (MACHINE_BITS < 0 || MACHINE_BITS > 64) {
-            log.error("机器码位数MACHINE_BITS需要>=0并且<=64。当前为" + MACHINE_BITS, new IllegalArgumentException());
+            valid = false;
+            log.error("机器码位数MACHINE_BITS需要>=0并且<=64。当前为" + MACHINE_BITS, new Exception("机器码位数无效"));
         }
         // 序列号位数
         if (SEQUENCE_BITS < 0 || SEQUENCE_BITS > 64) {
-            log.error("序列号位数SEQUENCE_BITS需要>=0并且<=64。当前为" + SEQUENCE_BITS, new IllegalArgumentException());
+            valid = false;
+            log.error("序列号位数SEQUENCE_BITS需要>=0并且<=64。当前为" + SEQUENCE_BITS, new Exception("序列化位数无效"));
         }
-
+        // 无效
+        if (!valid) {
+            log.error("重置初始化...");
+            initialization(0, 8, 12);
+        }
     }
 
     /**
@@ -178,10 +183,6 @@ public class Id {
     public static synchronized long next() {
         // 当前时间戳
         long currentTimestamp = Clock.now();
-        // 判断当前时间是否失效
-        if (currentTimestamp > TIMESTAMP_MAX) {
-            log.error("当前时间" + new Timestamp(currentTimestamp) + "已失效！", new Exception("时间戳超出最大值"));
-        }
         // 判断当前时间戳 和 上一次时间戳的大小关系
         if (lastTimestamp == currentTimestamp) {
             /* 同一毫秒 */
@@ -189,7 +190,7 @@ public class Id {
             sequence += 1;
             // 判断是否大于最大序列号
             if (sequence > SEQUENCE_MAX) {
-                log.warn("检测到阻塞，时间戳为{}，最大序列号为{}。", currentTimestamp, SEQUENCE_MAX);
+                log.warn("检测到阻塞，时间为{}，最大序列号为{}", new Timestamp(currentTimestamp), SEQUENCE_MAX);
                 /* 阻塞当前这一毫秒 */
                 while (lastTimestamp == currentTimestamp) {
                     currentTimestamp = Clock.now();
@@ -208,7 +209,7 @@ public class Id {
             lastTimestamp = currentTimestamp;
         } else {
             /* 时间回拨(当前时间戳减少了) */
-            log.warn("监测到系统时钟发生了回拨。时间为{}，上一个生成的时间为{}。", new Timestamp(currentTimestamp), new Timestamp(lastTimestamp));
+            log.warn("监测到系统时钟发生了回拨。回拨时间为{}，上一个生成的时间为{}", new Timestamp(currentTimestamp), new Timestamp(lastTimestamp));
             // 修改初始时间戳 为 初始时间戳-(上一个时间戳-当前时间戳+1)
             startTimestamp -= (lastTimestamp - currentTimestamp + 1);
             // 序列号归零
@@ -216,7 +217,7 @@ public class Id {
             // 更新上一个时间戳 为 当前时间戳
             lastTimestamp = currentTimestamp;
         }
-        // 返回 按位或 后的数值
+        // 返回"位或"后的数值
         return ((currentTimestamp - startTimestamp) << DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT) // 时间戳的差
                 | (MACHINE_ID << MACHINE_LEFT_SHIFT) // 机器码
                 | sequence; // 序列号
