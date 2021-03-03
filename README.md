@@ -26,13 +26,13 @@ maven
 <dependency>
     <groupId>cn.404z</groupId>
     <artifactId>id</artifactId>
-    <version>1.2.0</version>
+    <version>2.0.0</version>
 </dependency>
 ```
 
 gradle
 ```gradle
-implementation 'cn.404z:id:1.2.0'
+implementation 'cn.404z:id:2.0.0'
 ```
 
 ## 使用方法
@@ -195,7 +195,7 @@ ID为：5483989977530368
 ## 交流
 QQ：1416978277  
 微信：1416978277  
-支付宝：1416978277@qq.com
+支付宝：1416978277@qq.com  
 ![交流](https://ali1416.github.io/web/image/contact.png)
 
 ## 赞助
