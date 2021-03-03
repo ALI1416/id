@@ -5,7 +5,7 @@
 
   <groupId>cn.404z</groupId>
   <artifactId>id</artifactId>
-  <version>1.2.0</version>
+  <version>2.0.0</version>
 
   <name>Id</name>
   <description>High performance snowflake ID generator 高性能雪花ID生成器</description>
@@ -30,7 +30,7 @@
     <dependency>
       <groupId>cn.404z</groupId>
       <artifactId>clock</artifactId>
-      <version>1.2.0</version>
+      <version>2.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
