@@ -26,13 +26,40 @@ maven
 <dependency>
     <groupId>cn.404z</groupId>
     <artifactId>id</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
 </dependency>
 ```
 
 gradle
 ```gradle
-implementation 'cn.404z:id:2.0.0'
+implementation 'cn.404z:id:2.0.1'
+```
+
+#### 额外依赖(运行未报错，不需要加)
+maven
+```xml
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>1.7.30</version>
+</dependency>
+<dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-core</artifactId>
+    <version>1.2.3</version>
+</dependency>
+<dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-classic</artifactId>
+    <version>1.2.3</version>
+</dependency>
+```
+
+gradle
+```gradle
+implementation 'org.slf4j:slf4j-api:1.7.30'
+implementation 'ch.qos.logback:logback-core:1.2.3'
+implementation 'ch.qos.logback:logback-classic:1.2.3'
 ```
 
 ## 使用方法
