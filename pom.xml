@@ -17,6 +17,31 @@
     <url>git:https://github.com/ALI1416/id.git</url>
   </scm>
 
+  <properties>
+    <jdk.version>1.8</jdk.version>
+    <maven.compiler.source>${jdk.version}</maven.compiler.source>
+    <maven.compiler.target>${jdk.version}</maven.compiler.target>
+    <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+
+  <licenses>
+    <license>
+      <name>BSD License</name>
+      <url>https://opensource.org/licenses/BSD-3-Clause</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>ali</name>
+      <email>ali-k@foxmail.com</email>
+      <organization>404z.cn</organization>
+      <organizationUrl>http://404z.cn</organizationUrl>
+    </developer>
+  </developers>
+
   <dependencies>
     <!-- 必须依赖 -->
     <dependency>
@@ -44,31 +69,6 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-
-  <properties>
-    <jdk.version>1.8</jdk.version>
-    <maven.compiler.source>${jdk.version}</maven.compiler.source>
-    <maven.compiler.target>${jdk.version}</maven.compiler.target>
-    <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-  </properties>
-
-  <licenses>
-    <license>
-      <name>BSD License</name>
-      <url>https://opensource.org/licenses/BSD-3-Clause</url>
-    </license>
-  </licenses>
-
-  <developers>
-    <developer>
-      <name>ali</name>
-      <email>ali-k@foxmail.com</email>
-      <organization>404z.cn</organization>
-      <organizationUrl>http://404z.cn</organizationUrl>
-    </developer>
-  </developers>
 
   <profiles>
     <profile>
