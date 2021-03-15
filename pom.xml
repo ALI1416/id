@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>cn.404z</groupId>
@@ -17,21 +17,14 @@
     <url>git:https://github.com/ALI1416/id.git</url>
   </scm>
 
-  <properties>
-    <jdk.version>1.8</jdk.version>
-    <maven.compiler.source>${jdk.version}</maven.compiler.source>
-    <maven.compiler.target>${jdk.version}</maven.compiler.target>
-    <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-  </properties>
-
   <dependencies>
+    <!-- 必须依赖 -->
     <dependency>
       <groupId>cn.404z</groupId>
       <artifactId>clock</artifactId>
       <version>2.0.0</version>
     </dependency>
+    <!-- 额外依赖 -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -52,6 +45,15 @@
     </dependency>
   </dependencies>
 
+  <properties>
+    <jdk.version>1.8</jdk.version>
+    <maven.compiler.source>${jdk.version}</maven.compiler.source>
+    <maven.compiler.target>${jdk.version}</maven.compiler.target>
+    <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+
   <licenses>
     <license>
       <name>BSD License</name>
@@ -68,21 +70,9 @@
     </developer>
   </developers>
 
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <name>Sonatype Nexus Snapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-    </snapshotRepository>
-    <repository>
-      <id>ossrh</id>
-      <name>Nexus Release Repository</name>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
-
   <profiles>
     <profile>
+      <!-- 打包 -->
       <id>install</id>
       <activation>
         <activeByDefault>true</activeByDefault>
@@ -101,6 +91,7 @@
         </plugins>
       </build>
     </profile>
+    <!-- 发布 -->
     <profile>
       <id>deploy</id>
       <build>
@@ -170,16 +161,16 @@
               </execution>
             </executions>
           </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-release-plugin</artifactId>
-            <version>2.5.3</version>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-scm-plugin</artifactId>
-            <version>1.11.2</version>
-          </plugin>
+          <!-- <plugin> -->
+          <!-- <groupId>org.apache.maven.plugins</groupId> -->
+          <!-- <artifactId>maven-release-plugin</artifactId> -->
+          <!-- <version>2.5.3</version> -->
+          <!-- </plugin> -->
+          <!-- <plugin> -->
+          <!-- <groupId>org.apache.maven.plugins</groupId> -->
+          <!-- <artifactId>maven-scm-plugin</artifactId> -->
+          <!-- <version>1.11.2</version> -->
+          <!-- </plugin> -->
           <plugin>
             <groupId>org.sonatype.plugins</groupId>
             <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -195,5 +186,18 @@
       </build>
     </profile>
   </profiles>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <name>Nexus Release Repository</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 
 </project>
