@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>cn.404z</groupId>
   <artifactId>id</artifactId>
-  <version>2.0.1</version>
+  <version>2.1.0</version>
 
   <name>Id</name>
   <description>High performance snowflake ID generator 高性能雪花ID生成器</description>
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>cn.404z</groupId>
       <artifactId>clock</artifactId>
-      <version>2.0.0</version>
+      <version>2.1.0</version>
     </dependency>
     <!-- 额外依赖 -->
     <dependency>
@@ -161,16 +161,6 @@
               </execution>
             </executions>
           </plugin>
-          <!-- <plugin> -->
-          <!-- <groupId>org.apache.maven.plugins</groupId> -->
-          <!-- <artifactId>maven-release-plugin</artifactId> -->
-          <!-- <version>2.5.3</version> -->
-          <!-- </plugin> -->
-          <!-- <plugin> -->
-          <!-- <groupId>org.apache.maven.plugins</groupId> -->
-          <!-- <artifactId>maven-scm-plugin</artifactId> -->
-          <!-- <version>1.11.2</version> -->
-          <!-- </plugin> -->
           <plugin>
             <groupId>org.sonatype.plugins</groupId>
             <artifactId>nexus-staging-maven-plugin</artifactId>
