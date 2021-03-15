@@ -23,21 +23,13 @@
 
 maven
 ```xml
+<!-- 必须依赖 -->
 <dependency>
     <groupId>cn.404z</groupId>
     <artifactId>id</artifactId>
-    <version>2.0.1</version>
+    <version>2.1.0</version>
 </dependency>
-```
-
-gradle
-```gradle
-implementation 'cn.404z:id:2.0.1'
-```
-
-#### 额外依赖(运行未报错，不需要加)
-maven
-```xml
+<!-- 额外依赖(运行未报错，不需要加) -->
 <dependency>
     <groupId>org.slf4j</groupId>
     <artifactId>slf4j-api</artifactId>
@@ -56,7 +48,10 @@ maven
 ```
 
 gradle
-```gradle
+```groovy
+// 必须依赖
+implementation 'cn.404z:id:2.1.0'
+// 额外依赖(运行未报错，不需要加)
 implementation 'org.slf4j:slf4j-api:1.7.30'
 implementation 'ch.qos.logback:logback-core:1.2.3'
 implementation 'ch.qos.logback:logback-classic:1.2.3'
@@ -223,7 +218,7 @@ ID为：5483989977530368
 QQ：1416978277  
 微信：1416978277  
 支付宝：1416978277@qq.com  
-![交流](https://ali1416.github.io/web/image/contact.png)
+![交流](https://cdn.jsdelivr.net/gh/ALI1416/web/image/contact.png)
 
 ## 赞助
-![赞助](https://ali1416.github.io/web/image/donate.png)
+![赞助](https://cdn.jsdelivr.net/gh/ALI1416/web/image/donate.png)
