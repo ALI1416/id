@@ -50,16 +50,19 @@ public class Id {
      */
     private final static Logger log = LoggerFactory.getLogger(Id.class);
     /**
-     * 初始时间戳(如果发生回拨，这个值会减少)<br>
-     * 1609459200000<br>
+     * 初始时间戳{@value}<br>
      * 格林尼治时间为2021-01-01 00:00:00 GMT+0<br>
      * 北京时间为2021-01-01 08:00:00 GMT+8
      **/
-    private static long startTimestamp = 1609459200000L;
+    private final static long INITIAL_TIMESTAMP = 1609459200000L;
+    /**
+     * 初始时间戳(如果发生回拨，这个值会减少)<br>
+     **/
+    private static long startTimestamp = INITIAL_TIMESTAMP;
     /**
      * 上一次生成的时间戳
      */
-    private static long lastTimestamp = -1L;
+    private static volatile long lastTimestamp = -1L;
     /**
      * 序列号
      */
@@ -168,7 +171,7 @@ public class Id {
         // 序列号位数
         if (SEQUENCE_BITS < 0 || SEQUENCE_BITS > 64) {
             valid = false;
-            log.error("序列号位数SEQUENCE_BITS需要>=0并且<=64。当前为" + SEQUENCE_BITS, new Exception("序列化位数无效"));
+            log.error("序列号位数SEQUENCE_BITS需要>=0并且<=64。当前为" + SEQUENCE_BITS, new Exception("序列号位数无效"));
         }
         // 无效
         if (!valid) {
@@ -221,6 +224,20 @@ public class Id {
         return ((currentTimestamp - startTimestamp) << DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT) // 时间戳的差
                 | (MACHINE_ID << MACHINE_LEFT_SHIFT) // 机器码
                 | sequence; // 序列号
+    }
+
+    /**
+     * 重置初始时间戳<br>
+     * 如果时钟有回拨，初始时间戳 会减少，此操作可以使 初始时间戳 恢复到初始值
+     *
+     * @return 时钟回拨的毫秒数
+     * @since 2.3.0
+     */
+    public static long reset() {
+        long difference = INITIAL_TIMESTAMP - startTimestamp;
+        startTimestamp = INITIAL_TIMESTAMP;
+        log.info("重置初始时间戳，时钟总共回拨{}毫秒", difference);
+        return difference;
     }
 
 }

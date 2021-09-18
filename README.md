@@ -19,7 +19,7 @@
 [![Build Status](https://travis-ci.com/ALI1416/id-spring-boot-autoconfigure-test.svg?branch=master)](https://travis-ci.com/ALI1416/id-spring-boot-autoconfigure-test)
 
 ## 简介
-本项目重构的Twitter的雪花ID生成器，并加上了手动设置参数、时钟回拨处理，以及支持SpringBoot自动配置。
+本项目重构的Twitter的雪花ID生成器，并加上了手动设置参数、时钟回拨处理等，以及支持SpringBoot自动配置。
 
 ## 依赖导入
 最新版本
@@ -31,34 +31,34 @@ maven
 <dependency>
     <groupId>cn.404z</groupId>
     <artifactId>id</artifactId>
-    <version>2.1.0</version>
+    <version>2.3.0</version>
 </dependency>
 <!-- 额外依赖(运行未报错，不需要加) -->
 <dependency>
     <groupId>org.slf4j</groupId>
     <artifactId>slf4j-api</artifactId>
-    <version>1.7.30</version>
+    <version>1.7.32</version>
 </dependency>
 <dependency>
     <groupId>ch.qos.logback</groupId>
     <artifactId>logback-core</artifactId>
-    <version>1.2.3</version>
+    <version>1.2.6</version>
 </dependency>
 <dependency>
     <groupId>ch.qos.logback</groupId>
     <artifactId>logback-classic</artifactId>
-    <version>1.2.3</version>
+    <version>1.2.6</version>
 </dependency>
 ```
 
 gradle
 ```groovy
 // 必须依赖
-implementation 'cn.404z:id:2.1.0'
+implementation 'cn.404z:id:2.3.0'
 // 额外依赖(运行未报错，不需要加)
-implementation 'org.slf4j:slf4j-api:1.7.30'
-implementation 'ch.qos.logback:logback-core:1.2.3'
-implementation 'ch.qos.logback:logback-classic:1.2.3'
+implementation 'org.slf4j:slf4j-api:1.7.32'
+implementation 'ch.qos.logback:logback-core:1.2.6'
+implementation 'ch.qos.logback:logback-classic:1.2.6'
 ```
 
 ## 使用方法
@@ -205,6 +205,35 @@ for (int i = 0; i < 60; i++) {
 ID为：5483989976481792
 [main] WARN cn.z.id.Id - 监测到系统时钟发生了回拨。回拨时间为2021-03-02 19:45:33.249，上一个生成的时间为2021-03-02 20:45:40.392
 ID为：5483989977530368
+```
+
+### 重置初始时间戳(需要在1分钟内手动回拨时钟)
+代码
+```java
+for (int i = 0; i < 60; i++) {
+    System.out.println("ID为：" + Id.next());
+    try {
+        Thread.sleep(1000);
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+    System.out.println("总共回拨时间为：" + Id.reset() + "毫秒");
+}
+```
+
+结果
+```txt
+[main] INFO cn.z.id.Id - 预初始化...
+[main] INFO cn.z.id.Id - 初始化，MACHINE_ID为0，MACHINE_BITS为8，SEQUENCE_BITS为12
+[main] INFO cn.z.id.Id - 最大机器码MACHINE_ID为255，1ms内最多生成Id数量为4096，时钟最早回拨到2021-01-01 08:00:00.0，可使用时间大约为278年，失效日期为2299-09-27 23:10:22.207
+ID为：23564520900263936
+[main] INFO cn.z.id.Id - 重置初始时间戳，时钟总共回拨0毫秒
+总共回拨时间为：0毫秒
+[main] WARN cn.z.id.Id - 监测到系统时钟发生了回拨。回拨时间为2021-09-18 10:25:55.498，上一个生成的时间为2021-09-18 10:27:58.361
+ID为：23564520901312512
+[main] INFO cn.z.id.Id - 重置初始时间戳，时钟总共回拨122864毫秒
+总共回拨时间为：122864毫秒
+ID为：23564393127084032
 ```
 
 ## 性能比较
