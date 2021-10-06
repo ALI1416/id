@@ -3,20 +3,20 @@
 ## 项目地址
 [Github源码](https://github.com/ALI1416/id)
 [Gitee源码](https://gitee.com/ALI1416/id)
-[![Build Status](https://travis-ci.com/ALI1416/id.svg?branch=master)](https://travis-ci.com/ALI1416/id)
+[![Build Status](https://travis-ci.com/ALI1416/id.svg?branch=master)](https://app.travis-ci.com/ALI1416/id)
 
 [Github测试](https://github.com/ALI1416/id-test)
 [Gitee测试](https://gitee.com/ALI1416/id-test)
-[![Build Status](https://travis-ci.com/ALI1416/id-test.svg?branch=master)](https://travis-ci.com/ALI1416/id-test)
+[![Build Status](https://travis-ci.com/ALI1416/id-test.svg?branch=master)](https://app.travis-ci.com/ALI1416/id-test)
 
 ### SpringBoot自动配置项目地址
 [Github源码](https://github.com/ALI1416/id-spring-boot-autoconfigure)
 [Gitee源码](https://gitee.com/ALI1416/id-spring-boot-autoconfigure)
-[![Build Status](https://travis-ci.com/ALI1416/id-spring-boot-autoconfigure.svg?branch=master)](https://travis-ci.com/ALI1416/id-spring-boot-autoconfigure)
+[![Build Status](https://travis-ci.com/ALI1416/id-spring-boot-autoconfigure.svg?branch=master)](https://app.travis-ci.com/ALI1416/id-spring-boot-autoconfigure)
 
 [Github测试](https://github.com/ALI1416/id-spring-boot-autoconfigure-test)
 [Gitee测试](https://gitee.com/ALI1416/id-spring-boot-autoconfigure-test)
-[![Build Status](https://travis-ci.com/ALI1416/id-spring-boot-autoconfigure-test.svg?branch=master)](https://travis-ci.com/ALI1416/id-spring-boot-autoconfigure-test)
+[![Build Status](https://travis-ci.com/ALI1416/id-spring-boot-autoconfigure-test.svg?branch=master)](https://app.travis-ci.com/ALI1416/id-spring-boot-autoconfigure-test)
 
 ## 简介
 本项目重构的Twitter的雪花ID生成器，并加上了手动设置参数、时钟回拨处理等，以及支持SpringBoot自动配置。
