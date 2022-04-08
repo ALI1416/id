@@ -19,11 +19,11 @@
 [![Build Status](https://travis-ci.com/ALI1416/id-spring-boot-autoconfigure-test.svg?branch=master)](https://app.travis-ci.com/ALI1416/id-spring-boot-autoconfigure-test)
 
 ## 简介
-本项目重构的Twitter的雪花ID生成器，并加上了手动设置参数、时钟回拨处理等，以及支持SpringBoot自动配置。
+本项目根据Twitter的雪花ID生成器重构，并加上了手动设置参数、时钟回拨处理等，以及支持SpringBoot自动配置。
 
 ## 依赖导入
 最新版本
-[![Maven central](https://maven-badges.herokuapp.com/maven-central/cn.404z/id/badge.svg)](https://maven-badges.herokuapp.com/maven-central/cn.404z/id)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/cn.404z/id/badge.svg)](https://maven-badges.herokuapp.com/maven-central/cn.404z/id)
 
 maven
 ```xml
@@ -31,34 +31,22 @@ maven
 <dependency>
     <groupId>cn.404z</groupId>
     <artifactId>id</artifactId>
-    <version>2.3.0</version>
+    <version>2.4.0</version>
 </dependency>
 <!-- 额外依赖(运行未报错，不需要加) -->
 <dependency>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-api</artifactId>
-    <version>1.7.32</version>
-</dependency>
-<dependency>
-    <groupId>ch.qos.logback</groupId>
-    <artifactId>logback-core</artifactId>
-    <version>1.2.6</version>
-</dependency>
-<dependency>
     <groupId>ch.qos.logback</groupId>
     <artifactId>logback-classic</artifactId>
-    <version>1.2.6</version>
+    <version>1.2.11</version>
 </dependency>
 ```
 
 gradle
 ```groovy
 // 必须依赖
-implementation 'cn.404z:id:2.3.0'
+implementation 'cn.404z:id:2.4.0'
 // 额外依赖(运行未报错，不需要加)
-implementation 'org.slf4j:slf4j-api:1.7.32'
-implementation 'ch.qos.logback:logback-core:1.2.6'
-implementation 'ch.qos.logback:logback-classic:1.2.6'
+implementation 'ch.qos.logback:logback-classic:1.2.11'
 ```
 
 ## 使用方法
@@ -234,6 +222,45 @@ ID为：23564520901312512
 [main] INFO cn.z.id.Id - 重置初始时间戳，时钟总共回拨122864毫秒
 总共回拨时间为：122864毫秒
 ID为：23564393127084032
+```
+
+### 工具测试
+代码
+```java
+Id.init(3, 4, 5);
+// 获取配置参数
+System.out.println(Arrays.toString(IdUtil.param())); // [3, 4, 5]
+long id = Id.next();
+System.out.println(id); // 20448571222112
+// 根据配置参数解析id
+long[] parse = IdUtil.parse(id);
+System.out.println(Arrays.toString(parse)); // [1649397815668, 3, 0]
+// 根据配置参数构造id(序列号为0)
+System.out.println(IdUtil.format(parse[0])); // 20448571222112
+// 根据配置参数构造id
+System.out.println(IdUtil.format(parse[0], 1L)); // 20448571222113
+// 解析id
+long[] parse2 = IdUtil.parse(8L, 12L, id);
+System.out.println(Arrays.toString(parse2)); // [1609478701277, 46, 2144]
+// 构造id
+System.out.println(IdUtil.format(parse2[1], 8L, 12L, parse2[0], parse2[2])); // 20448571222112
+```
+
+结果
+```txt
+14:03:35.661 [main] INFO cn.z.id.Id - 预初始化...
+14:03:35.665 [main] INFO cn.z.id.Id - 初始化，MACHINE_ID为0，MACHINE_BITS为8，SEQUENCE_BITS为12
+14:03:35.667 [main] INFO cn.z.id.Id - 最大机器码MACHINE_ID为255，1ms内最多生成Id数量为4096，时钟最早回拨到2021-01-01 08:00:00.0，可使用时间大约为278年，失效日期为2299-09-27 23:10:22.207
+14:03:35.672 [main] INFO cn.z.id.Id - 手动初始化...
+14:03:35.672 [main] INFO cn.z.id.Id - 初始化，MACHINE_ID为3，MACHINE_BITS为4，SEQUENCE_BITS为5
+14:03:35.672 [main] INFO cn.z.id.Id - 最大机器码MACHINE_ID为15，1ms内最多生成Id数量为32，时钟最早回拨到2021-01-01 08:00:00.0，可使用时间大约为571232年，失效日期为572874-07-26 01:58:01.983
+[3, 4, 5]
+20448571222112
+[1649397815668, 3, 0]
+20448571222112
+20448571222113
+[1609478701277, 46, 2144]
+20448571222112
 ```
 
 ## 性能比较

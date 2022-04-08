@@ -7,15 +7,18 @@ import org.slf4j.LoggerFactory;
 import java.sql.Timestamp;
 
 /**
- * <h1>高性能雪花Id生成器</h1>
+ * <h1>高性能雪花ID生成器</h1>
+ *
+ * <p>雪花ID结构：0|时间戳的差|机器码|序列号</p>
+ *
+ * <p>例如：</p>
  *
  * <p>
- * 雪花Id结构：0|时间戳的差|机器码|序列号<br>
- * 正数1位，时间戳的差43位，机器码8位，序列号12位的二进制形式为<br>
+ * 正数1位，时间戳差43位，机器码8位，序列号12位的二进制形式为<br>
  * 0|1111111 11111111 11111111 11111111<br>
  * 11111111 1111|1111 1111|1111 11111111<br>
  * <br>
- * 在有效时间戳的差内，二进制形式为<br>
+ * 在有效时间戳差内，二进制形式为<br>
  * 00000000 00000000 00000|111 11111111<br>
  * 11111111 11111111 11111111 11111111<br>
  * 左移8+12=20位(机器码位数+序列号位数)变成<br>
@@ -33,7 +36,7 @@ import java.sql.Timestamp;
  * 00000000 00000000 00000000 00000000<br>
  * 00000000 00000000 0000|1111 11111111<br>
  * <br>
- * 三者通过"位或"运算得到雪花Id
+ * 三者通过"位或"运算得到ID
  * </p>
  *
  * <p>
@@ -54,9 +57,9 @@ public class Id {
      * 格林尼治时间为2021-01-01 00:00:00 GMT+0<br>
      * 北京时间为2021-01-01 08:00:00 GMT+8
      **/
-    private final static long INITIAL_TIMESTAMP = 1609459200000L;
+    protected final static long INITIAL_TIMESTAMP = 1609459200000L;
     /**
-     * 初始时间戳(如果发生回拨，这个值会减少)<br>
+     * 开始时间戳(如果发生回拨，这个值会减少)
      **/
     private static long startTimestamp = INITIAL_TIMESTAMP;
     /**
@@ -70,15 +73,15 @@ public class Id {
     /**
      * 机器码(默认0)
      */
-    private static long MACHINE_ID;
+    protected static long MACHINE_ID;
     /**
      * 机器码位数(默认8)
      **/
-    private static long MACHINE_BITS;
+    protected static long MACHINE_BITS;
     /**
      * 序列号位数(默认12)
      **/
-    private static long SEQUENCE_BITS;
+    protected static long SEQUENCE_BITS;
     /**
      * 最大机器码
      **/
@@ -92,7 +95,7 @@ public class Id {
      */
     private static long MACHINE_LEFT_SHIFT;
     /**
-     * 时间戳的差左移量
+     * 时间戳差左移量
      */
     private static long DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT;
 
@@ -155,7 +158,7 @@ public class Id {
     /**
      * 有效性检查
      */
-    public static void valid() {
+    private static void valid() {
         // 是否有效
         boolean valid = true;
         // 机器码
@@ -181,17 +184,19 @@ public class Id {
     }
 
     /**
-     * 获取下一个序列号
+     * 获取下一个id
+     *
+     * @return id
      */
     public static synchronized long next() {
         // 当前时间戳
         long currentTimestamp = Clock.now();
-        // 判断当前时间戳 和 上一次时间戳的大小关系
+        // 判断"当前时间戳"和"上一次时间戳"的大小关系
         if (lastTimestamp == currentTimestamp) {
             /* 同一毫秒 */
-            // 序列号自增
+            // "序列号"自增
             sequence += 1;
-            // 判断是否大于最大序列号
+            // 判断是否大于"最大序列号"
             if (sequence > SEQUENCE_MAX) {
                 log.warn("检测到阻塞，时间为{}，最大序列号为{}", new Timestamp(currentTimestamp), SEQUENCE_MAX);
                 /* 阻塞当前这一毫秒 */
@@ -201,34 +206,34 @@ public class Id {
                 /* 阻塞结束后 */
                 // 序列号归零
                 sequence = 0;
-                // 更新上一个时间戳 为 当前时间戳
+                // 更新"上一个时间戳"为"当前时间戳"
                 lastTimestamp = currentTimestamp;
             }
         } else if (lastTimestamp < currentTimestamp) {
             /* 当前时间戳增加了 */
-            // 序列号归零
+            // "序列号"归零
             sequence = 0;
-            // 更新上一个时间戳 为 当前时间戳
+            // 更新"上一个时间戳"为"当前时间戳"
             lastTimestamp = currentTimestamp;
         } else {
             /* 时间回拨(当前时间戳减少了) */
             log.warn("监测到系统时钟发生了回拨。回拨时间为{}，上一个生成的时间为{}", new Timestamp(currentTimestamp), new Timestamp(lastTimestamp));
-            // 修改初始时间戳 为 初始时间戳-(上一个时间戳-当前时间戳+1)
+            // 修改"开始时间戳"为"开始时间戳"-(上一个时间戳-当前时间戳+1)
             startTimestamp -= (lastTimestamp - currentTimestamp + 1);
-            // 序列号归零
+            // "序列号"归零
             sequence = 0;
-            // 更新上一个时间戳 为 当前时间戳
+            // 更新"上一个时间戳"为"当前时间戳"
             lastTimestamp = currentTimestamp;
         }
-        // 返回"位或"后的数值
+        // 返回"位或"后的数值(ID)
         return ((currentTimestamp - startTimestamp) << DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT) // 时间戳的差
                 | (MACHINE_ID << MACHINE_LEFT_SHIFT) // 机器码
                 | sequence; // 序列号
     }
 
     /**
-     * 重置初始时间戳<br>
-     * 如果时钟有回拨，初始时间戳 会减少，此操作可以使 初始时间戳 恢复到初始值
+     * 重置开始时间戳<br>
+     * 如果时钟有回拨，"开始时间戳"会减少，此操作可以使"开始时间戳"恢复到"初始时间戳"
      *
      * @return 时钟回拨的毫秒数
      * @since 2.3.0
@@ -236,7 +241,7 @@ public class Id {
     public static long reset() {
         long difference = INITIAL_TIMESTAMP - startTimestamp;
         startTimestamp = INITIAL_TIMESTAMP;
-        log.info("重置初始时间戳，时钟总共回拨{}毫秒", difference);
+        log.info("重置开始时间戳，时钟总共回拨{}毫秒", difference);
         return difference;
     }
 
