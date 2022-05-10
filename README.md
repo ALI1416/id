@@ -1,4 +1,4 @@
-# High performance snowflake ID generator 高性能雪花ID生成器
+# High Performance Snowflake ID Generator 高性能雪花ID生成器
 
 ## 项目地址
 [Github源码](https://github.com/ALI1416/id)
@@ -278,7 +278,7 @@ System.out.println(IdUtil.format(parse2[1], 8L, 12L, parse2[0], parse2[2])); // 
 QQ：1416978277  
 微信：1416978277  
 支付宝：1416978277@qq.com  
-![交流](https://cdn.jsdelivr.net/gh/ALI1416/web/image/contact.png)
+![交流](https://cdn.jsdelivr.net/gh/ALI1416/ALI1416/image/contact.png)
 
 ## 赞助
-![赞助](https://cdn.jsdelivr.net/gh/ALI1416/web/image/donate.png)
+![赞助](https://cdn.jsdelivr.net/gh/ALI1416/ALI1416/image/donate.png)
