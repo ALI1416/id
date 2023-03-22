@@ -14,6 +14,9 @@ import static cn.z.id.Id.*;
  **/
 public class IdUtil {
 
+    private IdUtil() {
+    }
+
     /**
      * 获取配置参数
      *

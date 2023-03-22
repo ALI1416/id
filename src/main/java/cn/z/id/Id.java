@@ -51,13 +51,13 @@ public class Id {
     /**
      * 日志实例
      */
-    private final static Logger log = LoggerFactory.getLogger(Id.class);
+    private static final Logger log = LoggerFactory.getLogger(Id.class);
     /**
      * 初始时间戳{@value}<br>
      * 格林尼治时间为2021-01-01 00:00:00 GMT+0<br>
      * 北京时间为2021-01-01 08:00:00 GMT+8
      **/
-    protected final static long INITIAL_TIMESTAMP = 1609459200000L;
+    protected static final long INITIAL_TIMESTAMP = 1609459200000L;
     /**
      * 开始时间戳(如果发生回拨，这个值会减少)
      **/
@@ -104,6 +104,9 @@ public class Id {
         initialization(0, 8, 12);
     }
 
+    private Id() {
+    }
+
     /**
      * 初始化
      *
@@ -127,7 +130,7 @@ public class Id {
                 new Timestamp(startTimestamp + differenceOfTimestampMax));
         long currentTimestamp = Clock.now();
         if (currentTimestamp - startTimestamp > differenceOfTimestampMax) {
-            log.error("当前时间" + new Timestamp(currentTimestamp) + "已失效！", new Exception("时间戳超出最大值"));
+            log.error("当前时间{}已失效！", new Timestamp(currentTimestamp), new Exception("时间戳超出最大值"));
         }
     }
 
@@ -164,17 +167,17 @@ public class Id {
         // 机器码
         if (MACHINE_ID > MACHINE_MAX || MACHINE_ID < 0) {
             valid = false;
-            log.error("机器码MACHINE_ID需要>=0并且<=" + MACHINE_MAX + "。当前为" + MACHINE_ID, new Exception("机器码无效"));
+            log.error("机器码MACHINE_ID需要>=0并且<={}。当前为{}", MACHINE_MAX, MACHINE_ID, new Exception("机器码无效"));
         }
         // 机器码位数
         if (MACHINE_BITS < 0 || MACHINE_BITS > 64) {
             valid = false;
-            log.error("机器码位数MACHINE_BITS需要>=0并且<=64。当前为" + MACHINE_BITS, new Exception("机器码位数无效"));
+            log.error("机器码位数MACHINE_BITS需要>=0并且<=64。当前为{}", MACHINE_BITS, new Exception("机器码位数无效"));
         }
         // 序列号位数
         if (SEQUENCE_BITS < 0 || SEQUENCE_BITS > 64) {
             valid = false;
-            log.error("序列号位数SEQUENCE_BITS需要>=0并且<=64。当前为" + SEQUENCE_BITS, new Exception("序列号位数无效"));
+            log.error("序列号位数SEQUENCE_BITS需要>=0并且<=64。当前为{}", SEQUENCE_BITS, new Exception("序列号位数无效"));
         }
         // 无效
         if (!valid) {
