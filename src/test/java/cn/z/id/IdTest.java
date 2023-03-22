@@ -2,9 +2,9 @@ package cn.z.id;
 
 import cn.z.clock.Clock;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -20,15 +20,15 @@ import java.util.UUID;
  * @author ALI[ali-k@foxmail.com]
  * @since 1.0.0
  **/
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 @Slf4j
-public class IdTest {
+class IdTest {
 
     /**
      * 直接调用
      */
     // @Test
-    public void test00Normal() {
+    void test00Normal() {
         log.info("ID为：{}", Id.next());
         // [main] INFO cn.z.id.Id - 预初始化...
         // [main] INFO cn.z.id.Id - 初始化，MACHINE_ID为0，MACHINE_BITS为8，SEQUENCE_BITS为12
@@ -41,7 +41,7 @@ public class IdTest {
      * 手动初始化
      */
     // @Test
-    public void test01Init() {
+    void test01Init() {
         Id.init(0, 8, 14);
         log.info("ID为：{}", Id.next());
         // [main] INFO cn.z.id.Id - 预初始化...
@@ -59,7 +59,7 @@ public class IdTest {
      * 初始化多次
      */
     // @Test
-    public void test02InitMore() {
+    void test02InitMore() {
         Id.init(0, 8, 13);
         Id.init(0, 8, 15);
         log.info("ID为：{}", Id.next());
@@ -79,7 +79,7 @@ public class IdTest {
      * 初始化晚了
      */
     // @Test
-    public void test03InitLate() {
+    void test03InitLate() {
         log.info("ID为：{}", Id.next());
         Id.init(0, 8, 12);
         log.info("ID为：{}", Id.next());
@@ -96,7 +96,7 @@ public class IdTest {
      * 初始化异常
      */
     // @Test
-    public void test04InitException() {
+    void test04InitException() {
         Id.init(1000, 8, 12);
         log.info("ID为：{}", Id.next());
         // [main] INFO cn.z.id.Id - 预初始化...
@@ -120,7 +120,7 @@ public class IdTest {
      * 阻塞
      */
     // @Test
-    public void test05Block() {
+    void test05Block() {
         // 初始化，复现阻塞
         Id.init(0, 0, 0);
         log.info("ID为：{}", Id.next());
@@ -148,7 +148,7 @@ public class IdTest {
      * 时钟回拨(需要在1分钟内手动回拨时钟)
      */
     // @Test
-    public void test06Back() {
+    void test06Back() {
         for (int i = 0; i < 60; i++) {
             log.info("ID为：{}", Id.next());
             try {
@@ -170,7 +170,7 @@ public class IdTest {
      * 重置初始时间戳(需要在1分钟内手动回拨时钟)
      */
     // @Test
-    public void test07Reset() {
+    void test07Reset() {
         for (int i = 0; i < 60; i++) {
             log.info("ID为：{}", Id.next());
             try {
@@ -198,7 +198,7 @@ public class IdTest {
      * 比较
      */
     // @Test
-    public void test08Compare() {
+    void test08Compare() {
         // 初始化，避免阻塞
         Id.init(0, 0, 26);
         // [main] INFO cn.z.id.Id - 预初始化...
@@ -278,7 +278,7 @@ public class IdTest {
      * 工具
      */
     @Test
-    public void test09Util() {
+    void test09Util() {
         Id.init(3, 4, 5);
         // 获取配置参数
         log.info(Arrays.toString(IdUtil.param())); // [3, 4, 5]
