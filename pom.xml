@@ -12,7 +12,7 @@
     <version>1.2.0</version>
   </parent>
 
-  <name>${project.artifactId}</name>
+  <name>id</name>
   <description>High Performance Snowflake ID Generator 高性能雪花ID生成器</description>
   <url>https://github.com/ALI1416/id</url>
 
