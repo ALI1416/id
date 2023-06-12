@@ -1,10 +1,10 @@
 # High Performance Snowflake ID Generator 高性能雪花ID生成器
 
-[![License](https://img.shields.io/github/license/ali1416/id?label=License)](https://opensource.org/licenses/BSD-3-Clause)
+[![License](https://img.shields.io/github/license/ALI1416/id?label=License)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 [![Java Support](https://img.shields.io/badge/Java-8+-green)](https://openjdk.org/)
 [![Maven Central](https://img.shields.io/maven-central/v/cn.404z/id?label=Maven%20Central)](https://mvnrepository.com/artifact/cn.404z/id)
-[![Tag](https://img.shields.io/github/v/tag/ali1416/id?label=Tag)](https://github.com/ALI1416/id/tags)
-[![Repo Size](https://img.shields.io/github/repo-size/ali1416/id?label=Repo%20Size&color=success)](https://github.com/ALI1416/id/archive/refs/heads/master.zip)
+[![Tag](https://img.shields.io/github/v/tag/ALI1416/id?label=Tag)](https://github.com/ALI1416/id/tags)
+[![Repo Size](https://img.shields.io/github/repo-size/ALI1416/id?label=Repo%20Size&color=success)](https://github.com/ALI1416/id/archive/refs/heads/master.zip)
 
 [![Java CI](https://github.com/ALI1416/id/actions/workflows/ci.yml/badge.svg)](https://github.com/ALI1416/id/actions/workflows/ci.yml)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ALI1416_id&metric=coverage)
@@ -20,14 +20,14 @@
 
 ```xml
 <dependency>
-    <groupId>cn.404z</groupId>
-    <artifactId>id</artifactId>
-    <version>2.5.0</version>
+  <groupId>cn.404z</groupId>
+  <artifactId>id</artifactId>
+  <version>2.6.0</version>
 </dependency>
 <dependency>
-    <groupId>ch.qos.logback</groupId>
-    <artifactId>logback-classic</artifactId>
-    <version>1.4.6</version>
+  <groupId>ch.qos.logback</groupId>
+  <artifactId>logback-classic</artifactId>
+  <version>1.4.7</version>
 </dependency>
 ```
 
@@ -274,6 +274,8 @@ log.info(String.valueOf(IdUtil.format(parse2[1], 8L, 12L, parse2[0], parse2[2]))
 [main] INFO cn.z.id.IdTest - 20448571222112
 ```
 
+更多请见[测试](./src/test)
+
 ## 性能比较
 
 | 次数   | random.nextLong()耗时 | Id.next()耗时 | UUID.randomUUID()耗时 | 倍数    |
@@ -283,14 +285,15 @@ log.info(String.valueOf(IdUtil.format(parse2[1], 8L, 12L, parse2[0], parse2[2]))
 | 1亿    | 793毫秒               | 909毫秒       | 83628毫秒             | 92.0倍  |
 | 21亿   | 36886毫秒             | 37871毫秒     | 7915039毫秒           | 209.0倍 |
 
-## 交流
+## 更新日志
 
-- [x] QQ：`1416978277`
-- [x] 微信：`1416978277`
-- [x] 支付宝：`1416978277@qq.com`
+[点击查看](./CHANGELOG.md)
 
-![交流](https://cdn.jsdelivr.net/gh/ALI1416/ALI1416/image/contact.png)
+## 关于
 
-## 赞助
-
-![赞助](https://cdn.jsdelivr.net/gh/ALI1416/ALI1416/image/donate.png)
+<object data="https://404z.cn/images/about.svg" style="max-width:100%;">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://404z.cn/images/about.dark.svg">
+    <img alt="About" src="https://404z.cn/images/about.light.svg">
+  </picture>
+</object>
