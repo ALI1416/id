@@ -14,7 +14,7 @@
 
 ## 简介
 
-本项目根据[Twitter的雪花ID生成器](https://github.com/twitter-archive/snowflake)重构，并加上了手动设置参数、时钟回拨处理等，以及支持[SpringBoot自动配置](https://github.com/ALI1416/id-spring-boot-autoconfigure)
+本项目根据[Twitter的雪花ID生成器](https://github.com/twitter-archive/snowflake)重构，并加上了手动设置参数、时钟回拨处理，偶数问题解决等，以及支持[SpringBoot自动配置](https://github.com/ALI1416/id-spring-boot-autoconfigure)
 
 ## 依赖导入
 
@@ -22,12 +22,12 @@
 <dependency>
   <groupId>cn.404z</groupId>
   <artifactId>id</artifactId>
-  <version>2.7.0</version>
+  <version>2.8.0</version>
 </dependency>
 <dependency>
   <groupId>ch.qos.logback</groupId>
   <artifactId>logback-classic</artifactId>
-  <version>1.4.8</version>
+  <version>1.4.11</version>
 </dependency>
 ```
 

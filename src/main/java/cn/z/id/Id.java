@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * <h1>高性能雪花ID生成器</h1>
@@ -191,15 +192,15 @@ public class Id {
                     currentTimestamp = Clock.now();
                 }
                 /* 阻塞结束后 */
-                // 序列号归零
-                sequence = 0;
+                // "序列号"归零
+                sequence = getRandomInitSequence();
                 // 更新"上一个时间戳"为"当前时间戳"
                 lastTimestamp = currentTimestamp;
             }
         } else if (lastTimestamp < currentTimestamp) {
             /* 当前时间戳增加了 */
             // "序列号"归零
-            sequence = 0;
+            sequence = getRandomInitSequence();
             // 更新"上一个时间戳"为"当前时间戳"
             lastTimestamp = currentTimestamp;
         } else {
@@ -208,7 +209,7 @@ public class Id {
             // 修改"开始时间戳"为"开始时间戳"-(上一个时间戳-当前时间戳+1)
             startTimestamp -= (lastTimestamp - currentTimestamp + 1);
             // "序列号"归零
-            sequence = 0;
+            sequence = getRandomInitSequence();
             // 更新"上一个时间戳"为"当前时间戳"
             lastTimestamp = currentTimestamp;
         }
@@ -230,6 +231,18 @@ public class Id {
         startTimestamp = INITIAL_TIMESTAMP;
         log.info("重置开始时间戳，时钟总共回拨 {} 毫秒", difference);
         return difference;
+    }
+
+    /**
+     * 获取随机初始序列号<br>
+     * 低频率使用下，序列号一直都是0，会导致id都为偶数<br>
+     * 当id作为分库分表的分片键时会出现严重的数据倾斜问题
+     *
+     * @return 随机初始序列号
+     * @see 2.8.0
+     */
+    private static long getRandomInitSequence() {
+        return SEQUENCE_MAX == 0 ? 0 : ThreadLocalRandom.current().nextLong(2);
     }
 
 }

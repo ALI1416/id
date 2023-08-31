@@ -11,7 +11,7 @@ import java.util.Random;
 import java.util.UUID;
 
 /**
- * <h1>高性能雪花Id生成器测试</h1>
+ * <h1>高性能雪花ID生成器测试</h1>
  *
  * <p>
  * createDate 2021/02/25 08:52:28
