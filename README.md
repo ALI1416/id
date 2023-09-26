@@ -22,7 +22,7 @@
 <dependency>
   <groupId>cn.404z</groupId>
   <artifactId>id</artifactId>
-  <version>2.8.0</version>
+  <version>3.0.0</version>
 </dependency>
 <dependency>
   <groupId>ch.qos.logback</groupId>
@@ -35,143 +35,78 @@
 
 ### 直接调用
 
-代码
-
 ```java
 log.info("ID {}", Id.next());
-```
-
-结果
-
-```txt
-INFO cn.z.id.Id -- 预初始化...
-INFO cn.z.id.Id -- 机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12
-INFO cn.z.id.Id -- 最大机器码MACHINE_ID 255 ，1ms内最多生成ID数量 4096 ，时钟最早回拨到 2021-01-01 08:00:00.0 ，可使用时间大约 278 年，失效时间 2299-09-27 23:10:22.207
-INFO cn.z.id.IdTest -- ID 84916544812875776
+// INFO cn.z.id.Id -- 高性能雪花ID生成器预初始化：机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12 ，最大机器码MACHINE_ID 255 ；1ms最多生成ID 4096 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 2299-09-27 23:10:22.207 ，大约可使用 278 年
+// INFO cn.z.id.IdTest -- ID 90441966306721793
 ```
 
 ### 手动初始化
 
-代码
-
 ```java
 Id.init(0, 8, 14);
 log.info("ID {}", Id.next());
-```
-
-结果
-
-```txt
-INFO cn.z.id.Id -- 预初始化...
-INFO cn.z.id.Id -- 机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12
-INFO cn.z.id.Id -- 最大机器码MACHINE_ID 255 ，1ms内最多生成ID数量 4096 ，时钟最早回拨到 2021-01-01 08:00:00.0 ，可使用时间大约 278 年，失效时间 2299-09-27 23:10:22.207
-INFO cn.z.id.Id -- 手动初始化...
-INFO cn.z.id.Id -- 机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 14
-INFO cn.z.id.Id -- 最大机器码MACHINE_ID 255 ，1ms内最多生成ID数量 16384 ，时钟最早回拨到 2021-01-01 08:00:00.0 ，可使用时间大约 69 年，失效时间 2090-09-07 23:47:35.551
-INFO cn.z.id.IdTest -- ID 339667266901639168
+// INFO cn.z.id.Id -- 高性能雪花ID生成器预初始化：机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12 ，最大机器码MACHINE_ID 255 ；1ms最多生成ID 4096 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 2299-09-27 23:10:22.207 ，大约可使用 278 年
+// INFO cn.z.id.Id -- 高性能雪花ID生成器初始化：机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 14 ，最大机器码MACHINE_ID 255 ；1ms最多生成ID 16384 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 2090-09-07 23:47:35.551 ，大约可使用 69 年
+// INFO cn.z.id.IdTest -- ID 361768291288481792
 ```
 
 ## 异常处理
 
 ### 初始化多次
 
-代码
-
 ```java
 Id.init(0, 8, 13);
 Id.init(0, 8, 15);
 log.info("ID {}", Id.next());
-```
-
-结果
-
-```txt
-INFO cn.z.id.Id -- 预初始化...
-INFO cn.z.id.Id -- 机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12
-INFO cn.z.id.Id -- 最大机器码MACHINE_ID 255 ，1ms内最多生成ID数量 4096 ，时钟最早回拨到 2021-01-01 08:00:00.0 ，可使用时间大约 278 年，失效时间 2299-09-27 23:10:22.207
-INFO cn.z.id.Id -- 手动初始化...
-INFO cn.z.id.Id -- 机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 13
-INFO cn.z.id.Id -- 最大机器码MACHINE_ID 255 ，1ms内最多生成ID数量 8192 ，时钟最早回拨到 2021-01-01 08:00:00.0 ，可使用时间大约 139 年，失效时间 2160-05-15 15:35:11.103
-WARN cn.z.id.Id -- 已经初始化过了，不可重复初始化！
-INFO cn.z.id.IdTest -- ID 169833687997743104
+// INFO cn.z.id.Id -- 高性能雪花ID生成器预初始化：机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12 ，最大机器码MACHINE_ID 255 ；1ms最多生成ID 4096 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 2299-09-27 23:10:22.207 ，大约可使用 278 年
+// INFO cn.z.id.Id -- 高性能雪花ID生成器初始化：机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 13 ，最大机器码MACHINE_ID 255 ；1ms最多生成ID 8192 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 2160-05-15 15:35:11.103 ，大约可使用 139 年
+// WARN cn.z.id.Id -- 已经初始化过了，不可重复初始化！
+// INFO cn.z.id.IdTest -- ID 180884221449994241
 ```
 
 ### 初始化晚了
-
-代码
 
 ```java
 log.info("ID {}", Id.next());
 Id.init(0, 8, 12);
 log.info("ID {}", Id.next());
-```
-
-结果
-
-```txt
-INFO cn.z.id.Id -- 预初始化...
-INFO cn.z.id.Id -- 机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12
-INFO cn.z.id.Id -- 最大机器码MACHINE_ID 255 ，1ms内最多生成ID数量 4096 ，时钟最早回拨到 2021-01-01 08:00:00.0 ，可使用时间大约 278 年，失效时间 2299-09-27 23:10:22.207
-INFO cn.z.id.IdTest -- ID 84916883292160000
-WARN cn.z.id.Id -- 已经初始化过了，不可重复初始化！
-INFO cn.z.id.IdTest -- ID 84916883292160001
+// INFO cn.z.id.Id -- 高性能雪花ID生成器预初始化：机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12 ，最大机器码MACHINE_ID 255 ；1ms最多生成ID 4096 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 2299-09-27 23:10:22.207 ，大约可使用 278 年
+// INFO cn.z.id.IdTest -- ID 90442134147039232
+// WARN cn.z.id.Id -- 已经初始化过了，不可重复初始化！
+// INFO cn.z.id.IdTest -- ID 90442134147039233
 ```
 
 ### 初始化异常
 
-代码
-
 ```java
 Id.init(1000, 8, 12);
 log.info("ID {}", Id.next());
-```
-
-结果
-
-```txt
-INFO cn.z.id.Id -- 预初始化...
-INFO cn.z.id.Id -- 机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12
-INFO cn.z.id.Id -- 最大机器码MACHINE_ID 255 ，1ms内最多生成ID数量 4096 ，时钟最早回拨到 2021-01-01 08:00:00.0 ，可使用时间大约 278 年，失效时间 2299-09-27 23:10:22.207
-INFO cn.z.id.Id -- 手动初始化...
-INFO cn.z.id.Id -- 机器码MACHINE_ID 1000 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12
-INFO cn.z.id.Id -- 最大机器码MACHINE_ID 255 ，1ms内最多生成ID数量 4096 ，时钟最早回拨到 2021-01-01 08:00:00.0 ，可使用时间大约 278 年，失效时间 2299-09-27 23:10:22.207
-cn.z.id.IdException: 机器码MACHINE_ID 1000 无效！应为 [0,255]
+// INFO cn.z.id.Id -- 高性能雪花ID生成器预初始化：机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12 ，最大机器码MACHINE_ID 255 ；1ms最多生成ID 4096 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 2299-09-27 23:10:22.207 ，大约可使用 278 年
+// INFO cn.z.id.Id -- 高性能雪花ID生成器初始化：机器码MACHINE_ID 1000 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12 ，最大机器码MACHINE_ID 255 ；1ms最多生成ID 4096 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 2299-09-27 23:10:22.207 ，大约可使用 278 年
+// cn.z.id.IdException: 机器码MACHINE_ID 1000 无效！应为 [0,255]
 ```
 
 ### 阻塞
 
-代码
-
 ```java
-// 初始化，复现阻塞
-Id.init(0, 0, 0);
+// 使用较小的序列号位数初始化，可以复现阻塞
+Id.init(0, 0, 1);
 log.info("ID {}", Id.next());
 log.info("ID {}", Id.next());
 log.info("ID {}", Id.next());
 log.info("ID {}", Id.next());
-```
-
-结果
-
-```txt
-INFO cn.z.id.Id -- 预初始化...
-INFO cn.z.id.Id -- 机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12
-INFO cn.z.id.Id -- 最大机器码MACHINE_ID 255 ，1ms内最多生成ID数量 4096 ，时钟最早回拨到 2021-01-01 08:00:00.0 ，可使用时间大约 278 年，失效时间 2299-09-27 23:10:22.207
-INFO cn.z.id.Id -- 手动初始化...
-INFO cn.z.id.Id -- 机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 0 ，序列号位数SEQUENCE_BITS 0
-INFO cn.z.id.Id -- 最大机器码MACHINE_ID 0 ，1ms内最多生成ID数量 1 ，时钟最早回拨到 2021-01-01 08:00:00.0 ，可使用时间大约 292471208 年，失效时间 292269004-12-03 00:47:04.191
-INFO cn.z.id.IdTest -- ID 80983144609
-WARN cn.z.id.Id -- 检测到阻塞，时间 2023-07-27 15:19:04.609 ，最大序列号 0
-INFO cn.z.id.IdTest -- ID 80983144625
-WARN cn.z.id.Id -- 检测到阻塞，时间 2023-07-27 15:19:04.625 ，最大序列号 0
-INFO cn.z.id.IdTest -- ID 80983144626
-WARN cn.z.id.Id -- 检测到阻塞，时间 2023-07-27 15:19:04.626 ，最大序列号 0
-INFO cn.z.id.IdTest -- ID 80983144641
+// INFO cn.z.id.Id -- 高性能雪花ID生成器预初始化：机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12 ，最大机器码MACHINE_ID 255 ；1ms最多生成ID 4096 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 2299-09-27 23:10:22.207 ，大约可使用 278 年
+// INFO cn.z.id.Id -- 高性能雪花ID生成器初始化：机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 0 ，序列号位数SEQUENCE_BITS 1 ，最大机器码MACHINE_ID 0 ；1ms最多生成ID 2 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 146140533-04-25 23:36:27.903 ，大约可使用 146235604 年
+// INFO cn.z.id.IdTest -- ID 172504939970
+// INFO cn.z.id.IdTest -- ID 172504939971
+// WARN cn.z.id.Id -- 检测到阻塞，时间 2023-09-26 15:01:09.985 ，最大序列号 1
+// INFO cn.z.id.IdTest -- ID 172504939981
+// WARN cn.z.id.Id -- 检测到阻塞，时间 2023-09-26 15:01:09.99 ，最大序列号 1
+// INFO cn.z.id.IdTest -- ID 172504940012
 ```
 
 ### 时钟回拨(需要在1分钟内手动回拨时钟)
-
-代码
 
 ```java
 for (int i = 0; i < 60; i++) {
@@ -182,24 +117,15 @@ for (int i = 0; i < 60; i++) {
         Thread.currentThread().interrupt();
     }
 }
-```
-
-结果
-
-```txt
-INFO cn.z.id.Id -- 预初始化...
-INFO cn.z.id.Id -- 机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12
-INFO cn.z.id.Id -- 最大机器码MACHINE_ID 255 ，1ms内最多生成ID数量 4096 ，时钟最早回拨到 2021-01-01 08:00:00.0 ，可使用时间大约 278 年，失效时间 2299-09-27 23:10:22.207
-INFO cn.z.id.IdTest -- ID 84917057323270144
-INFO cn.z.id.IdTest -- ID 84917058381283328
-WARN cn.z.id.Id -- 监测到系统时钟发生了回拨。回拨时间 2023-07-27 15:17:59.316 ，上一个生成的时间 2023-07-27 15:20:17.603
-INFO cn.z.id.IdTest -- ID 84917058382331904
-INFO cn.z.id.IdTest -- ID 84917059429859328
+// INFO cn.z.id.Id -- 高性能雪花ID生成器预初始化：机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12 ，最大机器码MACHINE_ID 255 ；1ms最多生成ID 4096 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 2299-09-27 23:10:22.207 ，大约可使用 278 年
+// INFO cn.z.id.IdTest -- ID 90442379897602049
+// INFO cn.z.id.IdTest -- ID 90442380959809536
+// WARN cn.z.id.Id -- 监测到系统时钟发生了回拨。回拨时间 2023-09-26 14:02:32.663 ，上一个生成的时间 2023-09-26 15:02:55.836
+// INFO cn.z.id.IdTest -- ID 90442380960858113
+// INFO cn.z.id.IdTest -- ID 90442382019919872
 ```
 
 ### 重置初始时间戳(需要在1分钟内手动回拨时钟)
-
-代码
 
 ```java
 for (int i = 0; i < 60; i++) {
@@ -211,63 +137,51 @@ for (int i = 0; i < 60; i++) {
     }
     log.info("总共回拨时间为：{}毫秒", Id.reset());
 }
+// INFO cn.z.id.Id -- 高性能雪花ID生成器预初始化：机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12 ，最大机器码MACHINE_ID 255 ；1ms最多生成ID 4096 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 2299-09-27 23:10:22.207 ，大约可使用 278 年
+// INFO cn.z.id.IdTest -- ID 90442426204815360
+// INFO cn.z.id.Id -- 重置开始时间戳，时钟总共回拨 0 毫秒
+// INFO cn.z.id.IdTest -- 总共回拨时间为：0毫秒
+// WARN cn.z.id.Id -- 监测到系统时钟发生了回拨。回拨时间 2023-09-26 14:03:30.023 ，上一个生成的时间 2023-09-26 15:03:38.985
+// INFO cn.z.id.IdTest -- ID 90442426205863936
+// INFO cn.z.id.Id -- 重置开始时间戳，时钟总共回拨 3608963 毫秒
+// INFO cn.z.id.IdTest -- 总共回拨时间为：3608963毫秒
 ```
 
-结果
-
-```txt
-INFO cn.z.id.Id -- 预初始化...
-INFO cn.z.id.Id -- 机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12
-INFO cn.z.id.Id -- 最大机器码MACHINE_ID 255 ，1ms内最多生成ID数量 4096 ，时钟最早回拨到 2021-01-01 08:00:00.0 ，可使用时间大约 278 年，失效时间 2299-09-27 23:10:22.207
-INFO cn.z.id.IdTest -- ID 84917178671824896
-INFO cn.z.id.Id -- 重置开始时间戳，时钟总共回拨 0 毫秒
-INFO cn.z.id.IdTest -- 总共回拨时间为：0毫秒
-WARN cn.z.id.Id -- 监测到系统时钟发生了回拨。回拨时间 2023-07-27 15:20:05.313 ，上一个生成的时间 2023-07-27 15:22:15.352
-INFO cn.z.id.IdTest -- ID 84917181851107328
-INFO cn.z.id.Id -- 重置开始时间戳，时钟总共回拨 130040 毫秒
-INFO cn.z.id.IdTest -- 总共回拨时间为：130040毫秒
-```
-
-## 工具测试
-
-代码
+## 工具
 
 ```java
 Id.init(3, 4, 5);
-// 获取配置参数
-log.info(Arrays.toString(IdUtil.param())); // [3, 4, 5]
+// INFO cn.z.id.Id -- 高性能雪花ID生成器预初始化：机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12 ，最大机器码MACHINE_ID 255 ；1ms最多生成ID 4096 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 2299-09-27 23:10:22.207 ，大约可使用 278 年
+// INFO cn.z.id.Id -- 高性能雪花ID生成器初始化：机器码MACHINE_ID 3 ，机器码位数MACHINE_BITS 4 ，序列号位数SEQUENCE_BITS 5 ，最大机器码MACHINE_ID 15 ；1ms最多生成ID 32 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 572874-07-26 01:58:01.983 ，大约可使用 571232 年
+
+/* 获取配置参数 */
+log.info(Arrays.toString(Id.param()));
+// INFO cn.z.id.IdTest -- [3, 4, 5]
 long id = Id.next();
-log.info(String.valueOf(id)); // 20448571222112
-// 根据配置参数解析id
-long[] parse = IdUtil.parse(id);
-log.info(Arrays.toString(parse)); // [1649397815668, 3, 0]
-// 根据配置参数构造id(序列号为0)
-log.info(String.valueOf(IdUtil.format(parse[0]))); // 20448571222112
-// 根据配置参数构造id
-log.info(String.valueOf(IdUtil.format(parse[0], 1L))); // 20448571222113
-// 解析id
-long[] parse2 = IdUtil.parse(8L, 12L, id);
-log.info(Arrays.toString(parse2)); // [1609478701277, 46, 2144]
-// 构造id
-log.info(String.valueOf(IdUtil.format(parse2[1], 8L, 12L, parse2[0], parse2[2]))); // 20448571222112
-```
+log.info(String.valueOf(id));
+// INFO cn.z.id.IdTest -- 44161594381921
 
-结果
+/* 根据配置参数解析id */
+long[] parse = Id.parse(id);
+log.info(Arrays.toString(parse));
+// INFO cn.z.id.IdTest -- [1695712314027, 3, 1]
 
-```txt
-INFO cn.z.id.Id -- 预初始化...
-INFO cn.z.id.Id -- 机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12
-INFO cn.z.id.Id -- 最大机器码MACHINE_ID 255 ，1ms内最多生成ID数量 4096 ，时钟最早回拨到 2021-01-01 08:00:00.0 ，可使用时间大约 278 年，失效时间 2299-09-27 23:10:22.207
-INFO cn.z.id.Id -- 手动初始化...
-INFO cn.z.id.Id -- 机器码MACHINE_ID 3 ，机器码位数MACHINE_BITS 4 ，序列号位数SEQUENCE_BITS 5
-INFO cn.z.id.Id -- 最大机器码MACHINE_ID 15 ，1ms内最多生成ID数量 32 ，时钟最早回拨到 2021-01-01 08:00:00.0 ，可使用时间大约 571232 年，失效时间 572874-07-26 01:58:01.983
-INFO cn.z.id.IdTest -- [3, 4, 5]
-INFO cn.z.id.IdTest -- 20448571222112
-INFO cn.z.id.IdTest -- [1649397815668, 3, 0]
-INFO cn.z.id.IdTest -- 20448571222112
-INFO cn.z.id.IdTest -- 20448571222113
-INFO cn.z.id.IdTest -- [1609478701277, 46, 2144]
-INFO cn.z.id.IdTest -- 20448571222112
+/* 根据配置参数构造id(序列号为0) */
+log.info(String.valueOf(Id.format(parse[0])));
+// INFO cn.z.id.IdTest -- 44161594381920
+
+/* 根据配置参数构造id */
+log.info(String.valueOf(Id.format(parse[0], 1L)));
+// INFO cn.z.id.IdTest -- 44161594381921
+
+/* 解析id */
+long[] parse2 = Id.parse(8L, 12L, id);
+log.info(Arrays.toString(parse2));
+// INFO cn.z.id.IdTest -- [1609501315778, 85, 1633]
+
+/* 构造id */
+log.info(String.valueOf(Id.format(parse2[1], 8L, 12L, parse2[0], parse2[2])));
+// INFO cn.z.id.IdTest -- 44161594381921
 ```
 
 更多请见[测试](./src/test)

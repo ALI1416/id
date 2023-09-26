@@ -1,7 +1,7 @@
 package cn.z.id;
 
 /**
- * <h1>ID异常类</h1>
+ * <h1>高性能雪花ID生成器异常类</h1>
  *
  * <p>
  * createDate 2023/07/27 09:53:07
@@ -13,14 +13,14 @@ package cn.z.id;
 public class IdException extends RuntimeException {
 
     /**
-     * ID异常
+     * 高性能雪花ID生成器异常
      */
     public IdException() {
         super();
     }
 
     /**
-     * ID异常
+     * 高性能雪花ID生成器异常
      *
      * @param message 信息
      */

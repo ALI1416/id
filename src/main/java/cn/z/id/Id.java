@@ -58,7 +58,7 @@ public class Id {
      * 格林尼治时间为2021-01-01 00:00:00 GMT+0<br>
      * 北京时间为2021-01-01 08:00:00 GMT+8
      **/
-    protected static final long INITIAL_TIMESTAMP = 1609459200000L;
+    private static final long INITIAL_TIMESTAMP = 1609459200000L;
     /**
      * 开始时间戳(如果发生回拨，这个值会减少)
      **/
@@ -74,15 +74,15 @@ public class Id {
     /**
      * 机器码(默认0)
      */
-    protected static long MACHINE_ID;
+    private static long MACHINE_ID;
     /**
      * 机器码位数(默认8)
      **/
-    protected static long MACHINE_BITS;
+    private static long MACHINE_BITS;
     /**
      * 序列号位数(默认12)
      **/
-    protected static long SEQUENCE_BITS;
+    private static long SEQUENCE_BITS;
     /**
      * 最大机器码
      **/
@@ -101,8 +101,7 @@ public class Id {
     private static long DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT;
 
     static {
-        log.info("预初始化...");
-        initInner(0, 8, 12);
+        initInner("预初始化", 0, 8, 12);
     }
 
     private Id() {
@@ -111,11 +110,12 @@ public class Id {
     /**
      * 内部初始化
      *
+     * @param msg          消息
      * @param machineId    机器码
      * @param machineBits  机器码位数
      * @param sequenceBits 序列号位数
      */
-    private static void initInner(long machineId, long machineBits, long sequenceBits) {
+    private static void initInner(String msg, long machineId, long machineBits, long sequenceBits) {
         MACHINE_ID = machineId;
         MACHINE_BITS = machineBits;
         SEQUENCE_BITS = sequenceBits;
@@ -125,10 +125,9 @@ public class Id {
         DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT = MACHINE_BITS + SEQUENCE_BITS;
         // 最大时间戳差
         long differenceOfTimestampMax = ~(-1L << (63 - DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT));
-        log.info("机器码MACHINE_ID {} ，机器码位数MACHINE_BITS {} ，序列号位数SEQUENCE_BITS {}", MACHINE_ID, MACHINE_BITS, SEQUENCE_BITS);
-        log.info("最大机器码MACHINE_ID {} ，1ms内最多生成ID数量 {} ，时钟最早回拨到 {} ，可使用时间大约 {} 年，失效时间 {}", MACHINE_MAX, SEQUENCE_MAX + 1,
-                new Timestamp(startTimestamp), differenceOfTimestampMax / (365 * 24 * 60 * 60 * 1000L),
-                new Timestamp(startTimestamp + differenceOfTimestampMax));
+        log.info("高性能雪花ID生成器{}：机器码MACHINE_ID {} ，机器码位数MACHINE_BITS {} ，序列号位数SEQUENCE_BITS {} ，最大机器码MACHINE_ID {} ；1ms最多生成ID {} 个，起始时间 {} ，失效时间 {} ，大约可使用 {} 年",
+                msg, MACHINE_ID, MACHINE_BITS, SEQUENCE_BITS, MACHINE_MAX, SEQUENCE_MAX + 1,
+                new Timestamp(startTimestamp), new Timestamp(startTimestamp + differenceOfTimestampMax), differenceOfTimestampMax / (365 * 24 * 60 * 60 * 1000L));
         long currentTimestamp = Clock.now();
         // 当前时间
         if (currentTimestamp - startTimestamp > differenceOfTimestampMax) {
@@ -160,8 +159,7 @@ public class Id {
             synchronized (Id.class) {
                 if (lastTimestamp == -1) {
                     lastTimestamp = -2;
-                    log.info("初始化...");
-                    initInner(machineId, machineBits, sequenceBits);
+                    initInner("初始化", machineId, machineBits, sequenceBits);
                 } else {
                     log.warn("已经初始化过了，不可重复初始化！");
                 }
@@ -239,10 +237,94 @@ public class Id {
      * 当id作为分库分表的分片键时会出现严重的数据倾斜问题
      *
      * @return 随机初始序列号
-     * @see 2.8.0
+     * @since 2.8.0
      */
     private static long getRandomInitSequence() {
         return SEQUENCE_MAX == 0 ? 0 : ThreadLocalRandom.current().nextLong(2);
+    }
+
+    /**
+     * 获取配置参数
+     *
+     * @return [0] machineId 机器码<br>
+     * [1] machineBits 机器码位数<br>
+     * [2] sequenceBits 序列号位数
+     * @since 3.0.0
+     */
+    public static long[] param() {
+        return new long[]{MACHINE_ID, MACHINE_BITS, SEQUENCE_BITS};
+    }
+
+    /**
+     * 构造id
+     *
+     * @param machineId    机器码
+     * @param machineBits  机器码位数
+     * @param sequenceBits 序列号位数
+     * @param timestamp    时间戳
+     * @param sequence     序列号
+     * @return id
+     * @since 3.0.0
+     */
+    public static long format(long machineId, long machineBits, long sequenceBits, long timestamp, long sequence) {
+        return ((timestamp - INITIAL_TIMESTAMP) << (machineBits + sequenceBits)) // 时间戳的差
+                | (machineId << sequenceBits) // 机器码
+                | sequence; // 序列号
+    }
+
+    /**
+     * 根据配置参数构造id(序列号为0)
+     *
+     * @param timestamp 时间戳
+     * @return id
+     * @since 3.0.0
+     */
+    public static long format(long timestamp) {
+        return format(MACHINE_ID, MACHINE_BITS, SEQUENCE_BITS, timestamp, 0L);
+    }
+
+    /**
+     * 根据配置参数构造id
+     *
+     * @param timestamp 时间戳
+     * @param sequence  序列号
+     * @return id
+     * @since 3.0.0
+     */
+    public static long format(long timestamp, long sequence) {
+        return format(MACHINE_ID, MACHINE_BITS, SEQUENCE_BITS, timestamp, sequence);
+    }
+
+    /**
+     * 解析id
+     *
+     * @param machineBits  机器码位数
+     * @param sequenceBits 序列号位数
+     * @param id           id
+     * @return [0] timestamp 时间戳<br>
+     * [1] machineId 机器码<br>
+     * [2] sequence  序列号
+     * @since 3.0.0
+     */
+    public static long[] parse(long machineBits, long sequenceBits, long id) {
+        return new long[]{ //
+                (id >> (machineBits + sequenceBits)) + INITIAL_TIMESTAMP, // 时间戳
+                (id >> sequenceBits) & (~(-1L << machineBits)), // 机器码
+                id & (~(-1L << sequenceBits)) // 序列号
+        };
+    }
+
+    /**
+     * 根据配置参数解析id
+     *
+     * @param id id
+     * @return [0] timestamp 时间戳<br>
+     * [1] machineId 机器码<br>
+     * [2] sequence  序列号
+     * @since 3.0.0
+     */
+    public static long[] parse(long id) {
+        return parse(MACHINE_BITS, SEQUENCE_BITS, id);
     }
 
 }
