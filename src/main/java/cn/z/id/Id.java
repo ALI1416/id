@@ -273,17 +273,6 @@ public class Id {
     }
 
     /**
-     * 根据配置参数构造id(序列号为0)
-     *
-     * @param timestamp 时间戳
-     * @return id
-     * @since 3.0.0
-     */
-    public static long format(long timestamp) {
-        return format(MACHINE_ID, MACHINE_BITS, SEQUENCE_BITS, timestamp, 0L);
-    }
-
-    /**
      * 根据配置参数构造id
      *
      * @param timestamp 时间戳
@@ -293,6 +282,17 @@ public class Id {
      */
     public static long format(long timestamp, long sequence) {
         return format(MACHINE_ID, MACHINE_BITS, SEQUENCE_BITS, timestamp, sequence);
+    }
+
+    /**
+     * 根据配置参数构造id(序列号为0)
+     *
+     * @param timestamp 时间戳
+     * @return id
+     * @since 3.0.0
+     */
+    public static long format(long timestamp) {
+        return format(MACHINE_ID, MACHINE_BITS, SEQUENCE_BITS, timestamp, 0L);
     }
 
     /**
@@ -325,6 +325,30 @@ public class Id {
      */
     public static long[] parse(long id) {
         return parse(MACHINE_BITS, SEQUENCE_BITS, id);
+    }
+
+    /**
+     * 获取id的时间戳
+     *
+     * @param machineBits  机器码位数
+     * @param sequenceBits 序列号位数
+     * @param id           id
+     * @return 时间戳
+     * @since 3.1.0
+     */
+    public static long timestamp(long machineBits, long sequenceBits, long id) {
+        return (id >> (machineBits + sequenceBits)) + INITIAL_TIMESTAMP;
+    }
+
+    /**
+     * 根据配置参数获取id的时间戳
+     *
+     * @param id id
+     * @return 时间戳
+     * @since 3.1.0
+     */
+    public static long timestamp(long id) {
+        return timestamp(MACHINE_BITS, SEQUENCE_BITS, id);
     }
 
 }

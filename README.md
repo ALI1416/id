@@ -22,7 +22,7 @@
 <dependency>
   <groupId>cn.404z</groupId>
   <artifactId>id</artifactId>
-  <version>3.0.0</version>
+  <version>3.1.0</version>
 </dependency>
 <dependency>
   <groupId>ch.qos.logback</groupId>
@@ -182,6 +182,10 @@ log.info(Arrays.toString(parse2));
 /* 构造id */
 log.info(String.valueOf(Id.format(parse2[1], 8L, 12L, parse2[0], parse2[2])));
 // INFO cn.z.id.IdTest -- 44161594381921
+
+/* 获取id的时间戳 */
+log.info(String.valueOf(new Timestamp(Id.timestamp(id))));
+// INFO cn.z.id.IdTest -- 2023-12-23 15:13:04.144
 ```
 
 更多请见[测试](./src/test)
