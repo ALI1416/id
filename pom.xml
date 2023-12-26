@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>id</artifactId>
-  <version>3.1.0</version>
+  <version>3.1.1</version>
 
   <parent>
     <groupId>cn.404z</groupId>

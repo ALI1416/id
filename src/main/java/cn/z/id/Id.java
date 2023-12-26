@@ -275,6 +275,19 @@ public class Id {
     /**
      * 根据配置参数构造id
      *
+     * @param machineId 机器码
+     * @param timestamp 时间戳
+     * @param sequence  序列号
+     * @return id
+     * @since 3.1.1
+     */
+    public static long format(long machineId, long timestamp, long sequence) {
+        return format(machineId, MACHINE_BITS, SEQUENCE_BITS, timestamp, sequence);
+    }
+
+    /**
+     * 根据配置参数构造id
+     *
      * @param timestamp 时间戳
      * @param sequence  序列号
      * @return id

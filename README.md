@@ -22,7 +22,7 @@
 <dependency>
   <groupId>cn.404z</groupId>
   <artifactId>id</artifactId>
-  <version>3.1.0</version>
+  <version>3.1.1</version>
 </dependency>
 <dependency>
   <groupId>ch.qos.logback</groupId>
