@@ -22,12 +22,12 @@
 <dependency>
   <groupId>cn.404z</groupId>
   <artifactId>id</artifactId>
-  <version>3.1.1</version>
+  <version>3.2.0</version>
 </dependency>
 <dependency>
   <groupId>ch.qos.logback</groupId>
   <artifactId>logback-classic</artifactId>
-  <version>1.4.11</version>
+  <version>1.5.0</version>
 </dependency>
 ```
 
@@ -139,12 +139,12 @@ for (int i = 0; i < 60; i++) {
 }
 // INFO cn.z.id.Id -- 高性能雪花ID生成器预初始化：机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12 ，最大机器码MACHINE_ID 255 ；1ms最多生成ID 4096 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 2299-09-27 23:10:22.207 ，大约可使用 278 年
 // INFO cn.z.id.IdTest -- ID 90442426204815360
-// INFO cn.z.id.Id -- 重置开始时间戳，时钟总共回拨 0 毫秒
-// INFO cn.z.id.IdTest -- 总共回拨时间为：0毫秒
+// INFO cn.z.id.Id -- 重置开始时间戳，时钟正拨 0 毫秒
+// INFO cn.z.id.IdTest -- 时钟正拨时间为：0毫秒
 // WARN cn.z.id.Id -- 监测到系统时钟发生了回拨。回拨时间 2023-09-26 14:03:30.023 ，上一个生成的时间 2023-09-26 15:03:38.985
 // INFO cn.z.id.IdTest -- ID 90442426205863936
-// INFO cn.z.id.Id -- 重置开始时间戳，时钟总共回拨 3608963 毫秒
-// INFO cn.z.id.IdTest -- 总共回拨时间为：3608963毫秒
+// INFO cn.z.id.Id -- 重置开始时间戳，时钟正拨 3608963 毫秒
+// INFO cn.z.id.IdTest -- 时钟正拨时间为：3608963毫秒
 ```
 
 ## 工具
@@ -184,7 +184,7 @@ log.info(String.valueOf(Id.format(parse2[1], 8L, 12L, parse2[0], parse2[2])));
 // INFO cn.z.id.IdTest -- 44161594381921
 
 /* 获取id的时间戳 */
-log.info(String.valueOf(new Timestamp(Id.timestamp(id))));
+log.info(String.valueOf(Id.newTimestamp(id)));
 // INFO cn.z.id.IdTest -- 2023-12-23 15:13:04.144
 ```
 

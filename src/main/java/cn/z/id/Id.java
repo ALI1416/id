@@ -5,7 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <h1>高性能雪花ID生成器</h1>
@@ -102,6 +104,44 @@ public class Id {
 
     static {
         initInner("预初始化", 0, 8, 12);
+        autoReset();
+    }
+
+    /**
+     * 自动重置开始时间戳
+     *
+     * @since 3.2.0
+     */
+    private static void autoReset() {
+        // 每10分钟检查一次
+        Executors.newSingleThreadScheduledExecutor(runnable -> {
+            Thread thread = new Thread(runnable, "IdAutoReset");
+            thread.setDaemon(true);
+            return thread;
+        }).scheduleAtFixedRate(() -> {
+            // 未发生时钟回拨
+            if (startTimestamp == INITIAL_TIMESTAMP) {
+                return;
+            }
+            // 已回拨毫秒数
+            long difference = INITIAL_TIMESTAMP - startTimestamp;
+            long currentTimestamp = Clock.now();
+            // 最大回拨毫秒数
+            long maxDifference = currentTimestamp - lastTimestamp;
+            if (maxDifference >= difference) {
+                // 修改"开始时间戳"为"初始时间戳"
+                startTimestamp = INITIAL_TIMESTAMP;
+                log.warn("自动重置开始时间戳，时钟正拨 {} 毫秒，不需再正拨", difference);
+            } else {
+                // 修改"开始时间戳"为"开始时间戳"+最大回拨毫秒数
+                startTimestamp += maxDifference;
+                log.warn("自动重置开始时间戳，时钟正拨 {} 毫秒，还需正拨 {} 毫秒", maxDifference, difference - maxDifference);
+            }
+            // "序列号"归零
+            sequence = getRandomInitSequence();
+            // 更新"上一个时间戳"为"当前时间戳"
+            lastTimestamp = currentTimestamp;
+        }, 10, 10, TimeUnit.MINUTES);
     }
 
     private Id() {
@@ -225,9 +265,15 @@ public class Id {
      * @since 2.3.0
      */
     public static long reset() {
+        // 已回拨毫秒数
         long difference = INITIAL_TIMESTAMP - startTimestamp;
+        // 修改"开始时间戳"为"初始时间戳"
         startTimestamp = INITIAL_TIMESTAMP;
-        log.info("重置开始时间戳，时钟总共回拨 {} 毫秒", difference);
+        log.info("重置开始时间戳，时钟正拨 {} 毫秒", difference);
+        // "序列号"归零
+        sequence = getRandomInitSequence();
+        // 更新"上一个时间戳"为"当前时间戳"
+        lastTimestamp = Clock.now();
         return difference;
     }
 
@@ -362,6 +408,30 @@ public class Id {
      */
     public static long timestamp(long id) {
         return timestamp(MACHINE_BITS, SEQUENCE_BITS, id);
+    }
+
+    /**
+     * 获取id的Timestamp
+     *
+     * @param machineBits  机器码位数
+     * @param sequenceBits 序列号位数
+     * @param id           id
+     * @return Timestamp
+     * @since 3.2.0
+     */
+    public static Timestamp newTimestamp(long machineBits, long sequenceBits, long id) {
+        return new Timestamp(timestamp(machineBits, sequenceBits, id));
+    }
+
+    /**
+     * 根据配置参数获取id的Timestamp
+     *
+     * @param id id
+     * @return Timestamp
+     * @since 3.2.0
+     */
+    public static Timestamp newTimestamp(long id) {
+        return new Timestamp(timestamp(id));
     }
 
 }
