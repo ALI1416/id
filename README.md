@@ -16,6 +16,11 @@
 
 本项目根据[Twitter的雪花ID生成器](https://github.com/twitter-archive/snowflake)重构，并加上了手动设置参数、时钟回拨处理，偶数问题解决等，以及支持[SpringBoot自动配置](https://github.com/ALI1416/id-spring-boot-autoconfigure)
 
+### 支持版本
+
+- [主线版本](https://github.com/ALI1416/id/tree/master)
+- [单机版](https://github.com/ALI1416/id/tree/single) 去除`机器码`、`机器码位数`字段，不支持分布式
+
 ## 依赖导入
 
 ```xml

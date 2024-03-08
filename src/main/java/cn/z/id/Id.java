@@ -17,11 +17,11 @@ import java.util.concurrent.TimeUnit;
  * <p>例如：</p>
  *
  * <p>
- * 正数1位，时间戳差43位，机器码8位，序列号12位的二进制形式为<br>
+ * 正数1位，时间戳的差43位，机器码8位，序列号12位的二进制形式为<br>
  * 0|1111111 11111111 11111111 11111111<br>
  * 11111111 1111|1111 1111|1111 11111111<br>
  * <br>
- * 在有效时间戳差内，二进制形式为<br>
+ * 在有效时间戳的差内，二进制形式为<br>
  * 00000000 00000000 00000|111 11111111<br>
  * 11111111 11111111 11111111 11111111<br>
  * 左移8+12=20位(机器码位数+序列号位数)变成<br>
@@ -98,7 +98,7 @@ public class Id {
      */
     private static long MACHINE_LEFT_SHIFT;
     /**
-     * 时间戳差左移量
+     * 时间戳的差左移量
      */
     private static long DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT;
 
@@ -163,7 +163,7 @@ public class Id {
         SEQUENCE_MAX = ~(-1L << SEQUENCE_BITS);
         MACHINE_LEFT_SHIFT = SEQUENCE_BITS;
         DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT = MACHINE_BITS + SEQUENCE_BITS;
-        // 最大时间戳差
+        // 最大时间戳的差
         long differenceOfTimestampMax = ~(-1L << (63 - DIFFERENCE_OF_TIMESTAMP_LEFT_SHIFT));
         log.info("高性能雪花ID生成器{}：机器码MACHINE_ID {} ，机器码位数MACHINE_BITS {} ，序列号位数SEQUENCE_BITS {} ，最大机器码MACHINE_ID {} ；1ms最多生成ID {} 个，起始时间 {} ，失效时间 {} ，大约可使用 {} 年",
                 msg, MACHINE_ID, MACHINE_BITS, SEQUENCE_BITS, MACHINE_MAX, SEQUENCE_MAX + 1,
