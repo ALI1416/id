@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>id</artifactId>
-  <version>3.2.0</version>
+  <version>3.2.0.single</version>
 
   <parent>
     <groupId>cn.404z</groupId>
@@ -14,7 +14,7 @@
   </parent>
 
   <name>id</name>
-  <description>High Performance Snowflake ID Generator 高性能雪花ID生成器</description>
+  <description>High Performance Snowflake ID Generator (Single Version) 高性能雪花ID生成器(单机版)</description>
   <url>https://github.com/ALI1416/id</url>
 
   <scm>
