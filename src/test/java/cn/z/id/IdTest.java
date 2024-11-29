@@ -27,7 +27,7 @@ class IdTest {
     /**
      * 直接调用
      */
-    // @Test
+    @Test
     void test00Normal() {
         log.info("ID {}", Id.next());
         // INFO cn.z.id.Id -- 高性能雪花ID生成器预初始化：序列号位数SEQUENCE_BITS 20 ；1ms最多生成ID 1048576 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 2299-09-27 23:10:22.207 ，大约可使用 278 年
@@ -268,7 +268,9 @@ class IdTest {
         // INFO cn.z.id.IdTest -- 3213748448577
 
         /* 获取id的时间戳 */
+        log.info(String.valueOf(Id.newTimestamp(20L, id)));
         log.info(String.valueOf(Id.newTimestamp(id)));
+        // INFO cn.z.id.IdTest -- 2024-03-08 17:07:19.018
         // INFO cn.z.id.IdTest -- 2024-03-08 17:07:19.018
     }
 

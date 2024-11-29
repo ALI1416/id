@@ -81,6 +81,9 @@ public class Id {
         autoReset();
     }
 
+    private Id() {
+    }
+
     /**
      * 自动重置开始时间戳
      *
@@ -116,9 +119,6 @@ public class Id {
             // 更新"上一个时间戳"为"当前时间戳"
             lastTimestamp = currentTimestamp;
         }, 10, 10, TimeUnit.MINUTES);
-    }
-
-    private Id() {
     }
 
     /**
@@ -302,9 +302,11 @@ public class Id {
      * @since 3.0.0
      */
     public static long[] parse(long sequenceBits, long id) {
-        return new long[]{ //
-                (id >> sequenceBits) + INITIAL_TIMESTAMP, // 时间戳
-                id & (~(-1L << sequenceBits)) // 序列号
+        return new long[]{
+                // 时间戳
+                (id >> sequenceBits) + INITIAL_TIMESTAMP,
+                // 序列号
+                id & (~(-1L << sequenceBits))
         };
     }
 
