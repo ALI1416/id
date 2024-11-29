@@ -6,7 +6,6 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
@@ -28,7 +27,7 @@ class IdTest {
     /**
      * 直接调用
      */
-    // @Test
+    @Test
     void test00Normal() {
         log.info("ID {}", Id.next());
         // INFO cn.z.id.Id -- 高性能雪花ID生成器预初始化：机器码MACHINE_ID 0 ，机器码位数MACHINE_BITS 8 ，序列号位数SEQUENCE_BITS 12 ，最大机器码MACHINE_ID 255 ；1ms最多生成ID 4096 个，起始时间 2021-01-01 08:00:00.0 ，失效时间 2299-09-27 23:10:22.207 ，大约可使用 278 年
@@ -111,7 +110,7 @@ class IdTest {
     /**
      * 时钟回拨(需要在1分钟内手动回拨时钟)
      */
-     @Test
+    // @Test
     void test06Back() {
         for (int i = 0; i < 600; i++) {
             log.info("ID {}", Id.next());
@@ -266,7 +265,9 @@ class IdTest {
         // INFO cn.z.id.IdTest -- 44161594381921
 
         /* 获取id的时间戳 */
+        log.info(String.valueOf(Id.newTimestamp(8L, 12L, id)));
         log.info(String.valueOf(Id.newTimestamp(id)));
+        // INFO cn.z.id.IdTest -- 2023-12-23 15:13:04.144
         // INFO cn.z.id.IdTest -- 2023-12-23 15:13:04.144
     }
 
