@@ -27,12 +27,12 @@
 <dependency>
   <groupId>cn.404z</groupId>
   <artifactId>id</artifactId>
-  <version>3.4.0.single</version>
+  <version>3.5.0.single</version>
 </dependency>
 <dependency>
   <groupId>ch.qos.logback</groupId>
   <artifactId>logback-classic</artifactId>
-  <version>1.5.21</version>
+  <version>1.5.38</version>
 </dependency>
 ```
 
